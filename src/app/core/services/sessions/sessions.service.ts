@@ -46,13 +46,13 @@ export class SessionsService {
       name: "Gesture",
       rounds: [
         {
-          count: 10,
-          duration: 30,
+          count: 5,
+          duration: 2,
           type: SessionRoundType.Sketch
         },
         {
-          count: 6,
-          duration: 120,
+          count: 5,
+          duration: 4,
           type: SessionRoundType.Sketch
         }
       ]
