@@ -1,0 +1,25 @@
+:host {
+    padding: 20px;
+}
+
+list-item {
+    display: block;
+    padding: 10px;
+    background-color: #FFFFFF;
+    color: #000000;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+list-item:hover {
+    background-color: #DDDDDD;
+}
+
+list-item.selected {
+    background-color: #00FF00;
+    pointer-events: none;
+}
+
+list-item:not(:first-child) {
+    margin-top: 5px;
+}

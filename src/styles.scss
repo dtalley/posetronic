@@ -1,0 +1,75 @@
+@font-face {
+	font-family: merriweather;
+	font-weight: 300;
+	src: url(/assets/fonts/Merriweather-Light.ttf);
+}
+
+@font-face {
+	font-family: merriweather;
+	font-weight: 300;
+	font-style: italic;
+	src: url(/assets/fonts/Merriweather-LightItalic.ttf);
+}
+
+@font-face {
+	font-family: merriweather;
+	font-weight: normal;
+	font-weight: 500;
+	src: url(/assets/fonts/Merriweather-Regular.ttf);
+}
+
+@font-face {
+	font-family: merriweather;
+	font-weight: normal;
+	font-weight: 500;
+	font-style: italic;
+	src: url(/assets/fonts/Merriweather-Italic.ttf);
+}
+
+@font-face {
+	font-family: merriweather;
+	font-weight: bold;
+	font-weight: 700;
+	src: url(/assets/fonts/Merriweather-Bold.ttf);
+}
+
+@font-face {
+	font-family: merriweather;
+	font-weight: bold;
+	font-weight: 700;
+	font-style: italic;
+	src: url(/assets/fonts/Merriweather-BoldItalic.ttf);
+}
+
+@font-face {
+	font-family: merriweather;
+	font-weight: 900;
+	src: url(/assets/fonts/Merriweather-Black.ttf);
+}
+
+@font-face {
+	font-family: merriweather;
+	font-weight: 900;
+	font-style: italic;
+	src: url(/assets/fonts/Merriweather-BlackItalic.ttf);
+}
+
+@font-face {
+	font-family: fontawesome;
+	src: url(/assets/fonts/fa-solid-900.ttf);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+
+  height: 100%;
+  font-family: merriweather;
+}
+
+app-root {
+  display: block;
+  min-height: 100%;
+  width: 100%;
+  background: linear-gradient(162deg, rgba(68,68,68,1) 13%, rgba(17,17,17,1) 92%);
+}

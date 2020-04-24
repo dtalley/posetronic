@@ -1,0 +1,15 @@
+<div *ngIf="sessionData.name">
+<div>{{sessionData.name}}</div>
+<a href="#" (click)="onChooseFolder($event)">Choose Folder</a>
+<div>{{selectedFolder}}</div>
+<a [routerLink]="['/session', sessionData.id]" (click)="onStartSession($event)" *ngIf="selectedFolder">Start Session</a>
+<rounds>
+    <list-item *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
+        {{round.count}}x {{round.duration}}s
+    </list-item>
+</rounds>
+</div>
+
+<div *ngIf="!sessionData.name">
+    Select a session
+</div>
