@@ -1,15 +1,23 @@
-<div *ngIf="sessionData.name">
-<div>{{sessionData.name}}</div>
-<a href="#" (click)="onChooseFolder($event)">Choose Folder</a>
-<div>{{selectedFolder}}</div>
-<a [routerLink]="['/session', sessionData.id]" (click)="onStartSession($event)" *ngIf="selectedFolder">Start Session</a>
-<rounds>
-    <list-item *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
-        {{round.count}}x {{round.duration}}s
-    </list-item>
-</rounds>
-</div>
+<session *ngIf="sessionData.name">
+    <name>{{sessionData.name}}</name>
+    <selectFolder (click)="onChooseFolder($event)" [ngClass]="{hilite: !selectedFolder}">{{selectedFolder?selectedFolder:'Choose A Folder'}}</selectFolder>
+    <rounds>
+        <list-item [ngClass]="{sketch: isRoundSketch(round), rest: isRoundRest(round)}" *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
+            <count>{{round.count}}</count>
+            <duration>{{sessionsService.formatDuration(round.duration)}}</duration>
+            <time>{{calculateRoundLength(round)}}</time>
+        </list-item>
+    </rounds>
+    <!--<controls>
+        Test
+    </controls>-->
+    <length>
+        <label>Time: </label>
+        {{roundDuration}}
+    </length>
+    <start [ngClass]="{disabled: !selectedFolder}" [routerLink]="['/session', sessionData.id]" (click)="onStartSession($event)">Start Drawing!</start>
+</session>
 
-<div *ngIf="!sessionData.name">
-    Select a session
-</div>
+<empty *ngIf="!sessionData.name">
+    Select a session<br />to the left.
+</empty>

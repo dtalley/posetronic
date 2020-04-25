@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Output, EventEmitter} from '@angular/core';
 
 @Component({
@@ -6,7 +6,7 @@ import { Output, EventEmitter} from '@angular/core';
   templateUrl: './circle-timer.component.html',
   styleUrls: ['./circle-timer.component.scss']
 })
-export class CircleTimerComponent implements OnInit {
+export class CircleTimerComponent implements OnInit, OnDestroy {
   leftPercent = 0
   rightPercent = 0
 
@@ -22,12 +22,25 @@ export class CircleTimerComponent implements OnInit {
 
   paddingClass = ""
 
+  mute = 2
+
+  audioFinished = new Audio("assets/audio/finished.mp3")
+  audioStart = new Audio("assets/audio/start.mp3")
+  audioCountdown = new Audio("assets/audio/countdown.mp3")
+
   @Output() timerFinished = new EventEmitter
   @Output() timerStarted = new EventEmitter
+  @Output() countdownStarted = new EventEmitter
 
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    if(this.timerHandle) {
+      window.clearInterval(this.timerHandle)
+    }
   }
 
   setDuration(duration): void {
@@ -46,10 +59,13 @@ export class CircleTimerComponent implements OnInit {
     this.countdown = Math.ceil(delay/1000)
     this.startInternal()
 
-    this.paddingClass = "fadeIn"
+    if(this.paddingClass == "fadeOut") {
+      this.paddingClass = "fadeIn"
+    }
 
     if(this.countdownTime <= 0) {
-      new Audio("assets/audio/start.mp3").play();
+      this.timerStarted.emit()
+      this.audioStart.play()
     }
   }
 
@@ -70,7 +86,7 @@ export class CircleTimerComponent implements OnInit {
 
       if(this.countdown == 0) {
         this.timerStarted.emit()
-        new Audio("assets/audio/start.mp3").play();
+        this.audioStart.play()
       }
       return;
     }
@@ -81,7 +97,11 @@ export class CircleTimerComponent implements OnInit {
     if(oldTime < 6000 && 
       Math.floor(oldTime/1000) > Math.floor((oldTime-delta)/1000) &&
       Math.floor(oldTime/1000) > 0) {
-      new Audio("assets/audio/countdown.mp3").play();
+      this.audioCountdown.currentTime = 0
+      this.audioCountdown.play()
+      if(oldTime > 5000) {
+        this.countdownStarted.emit()
+      }
     }
 
     if(this.timeLeft <= 0) {
@@ -92,7 +112,7 @@ export class CircleTimerComponent implements OnInit {
 
       this.paddingClass = "fadeOut"
 
-      new Audio("assets/audio/finished.mp3").play();
+      this.audioFinished.play()
     }
 
     let percent = this.timeLeft / this.timeMax;
@@ -103,5 +123,27 @@ export class CircleTimerComponent implements OnInit {
       this.leftPercent = 1
       this.rightPercent = (.5-percent)/.5;
     }
+  }
+
+  setMute(newMute: number) {
+    this.mute = newMute
+
+    let volume = 1
+    if(this.mute == 1) {
+      volume = .4
+    } else if(this.mute == 0) {
+      volume = 0
+    }
+    this.audioStart.volume = volume
+    this.audioFinished.volume = volume
+    this.audioCountdown.volume = volume
+  }
+
+  pause() {
+    window.clearInterval(this.timerHandle)
+  }
+
+  resume() {
+    this.startInternal()
   }
 }

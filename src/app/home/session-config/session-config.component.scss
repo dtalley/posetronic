@@ -1,14 +1,41 @@
 :host {
-    padding: 20px;
+    background-color: #111111;
+    color: #FFFFFF;
+    height: 100%;
+}
+
+empty {
+    display: block;
+    text-align: center;
+    font-size: 20px;
+    color: #444444;
+    padding-top: 40px;
+}
+
+session {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+rounds {
+    display: block;
+    padding: 5px;
+    background-color: #222222;
+    flex-grow: 1;
 }
 
 list-item {
-    display: block;
+    display: flex;
+    flex-direction: row;
     padding: 10px;
     background-color: #FFFFFF;
     color: #000000;
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
+    font-size: 16px;
+    line-height: 20px;
+    border: 2px solid #FFFFFF;
 }
 
 list-item:hover {
@@ -16,10 +43,123 @@ list-item:hover {
 }
 
 list-item.selected {
-    background-color: #00FF00;
+    border: 2px solid #e242d9;
     pointer-events: none;
+    background-color: #ffe5fe;
 }
 
 list-item:not(:first-child) {
-    margin-top: 5px;
+    margin-top: 2px;
+}
+
+list-item.sketch:before {
+    font-family: fontawesome;
+    content: '\f303';
+    margin-right: 5px;
+}
+
+list-item.rest:before {
+    font-family: fontawesome;
+    content: '\f4b8';
+    margin-right: 5px;
+}
+
+list-item > duration {
+    flex-grow: 1;
+    color: #e242d9;
+}
+
+list-item > count {
+    flex-basis: 40px;
+}
+
+list-item > count:after {
+    content: 'x';
+    font-size: 12px;
+}
+
+list-item > time {
+    color: #AAAAAA
+}
+
+name {
+    padding: 10px;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+selectFolder {
+    display: block;
+    padding: 10px;
+    font-size: 12px;
+    background-color: #666666;
+    cursor: pointer;
+    margin: 5px;
+    border-radius: 2px;
+    word-wrap: break-word;
+    border: 2px solid #666666;
+}
+
+selectFolder:before {
+    content: '\f07c';
+    font-family: fontawesome;
+    margin-right: 5px;
+}
+
+selectFolder:hover {
+    background-color: #888888;
+}
+
+selectFolder:active {
+    background-color: #444444;
+}
+
+selectFolder.hilite {
+    background-color: #51873e;
+    border-color: #51873e;
+}
+
+selectFolder.hilite:hover {
+    background-color: #70a45d;
+}
+
+selectFolder.hilite:active {
+    background-color: #4c6f3f;
+}
+
+length {
+    text-align: center;
+    padding: 20px;
+    font-size: 26px;
+    color: #888888;
+}
+
+length > label {
+    color: #444444;
+}
+
+start {
+    padding: 10px;
+    text-align: center;
+    font-size: 22px;
+    margin: 5px;
+    background-color: #51873e;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 2px solid #51873e;
+}
+
+start:hover {
+    background-color: #70a45d;
+}
+
+start:active {
+    background-color: #4c6f3f;
+}
+
+start.disabled {
+    pointer-events: none;
+    background-color: #888888;
+    color: #AAAAAA;
+    border-color: #888888;
 }

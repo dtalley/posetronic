@@ -1,11 +1,46 @@
-<image>
+<image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY}">
     <div *ngIf="currentFile" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
 
     </div>
 </image>
-<controls>
-    Test
-</controls>
-<circle-timer (timerFinished)="onTimerFinished()">
-    
+<interface [className]="mouseOver||betweenRounds?'fadeIn':interfaceClass">
+    <info *ngIf="currentRound">
+        {{currentFile}}
+    </info>
+    <time *ngIf="currentRound">
+        {{currentRound.minutes>0?currentRound.minutes+'m ':''}}
+        {{currentRound.seconds>0?currentRound.seconds+'s':''}}
+    </time>
+    <controls *ngIf="currentRound">
+        <group>
+            <control title="Exit" class="exit" (click)="onExit()"></control>
+        </group>
+        <group>
+            <control title="Open" class="open" (click)="onOpenImage()"></control>
+            <control title="Open" class="delete" (click)="onDeleteImage()"></control>
+            <spacer></spacer>
+            <control title="Previous Image" (click)="onPreviousImage()" [className]="'prev-image' + ((imageIndex==0)?' disabled':'')"></control>
+            <label class="image"></label>
+            <control title="Next Image" (click)="onNextImage()" [className]="'next-image' + ((imageIndex==sessionFiles.length-1)?' disabled':'')"></control>
+            <spacer></spacer>
+            <control title="Grayscale" [className]="'grayscale' + (grayscale?' active':'')" (click)="onToggleGrayscale()"></control>
+            <control title="Mirror Horizontal" [className]="'mirror' + (mirror?' active':'')" (click)="onToggleMirror()"></control>
+            <control title="Mirror Vertical" [className]="'mirrorY' + (mirrorY?' active':'')" (click)="onToggleMirrorY()"></control>
+        </group>
+        <group>
+            <control title="Previous Round" (click)="onPreviousRound()" [className]="'prev-round' + ((currentIndex==0)?' disabled':'')"></control>
+            <control [title]="paused?'Resume Round':'Pause Round'" (click)="onTogglePause()" [className]="paused?'play active':'pause'"></control>
+            <control title="Next Round" (click)="onNextRound()" [className]="'next-round' + ((currentIndex==roundList.length-1||imageIndex==sessionFiles.length-1)?' disabled':'')"></control>
+            <spacer></spacer>
+            <control title="Restart Round" (click)="onRestartRound()" class="restart"></control>
+        </group>
+        <group>
+            <control title="Show Timer" [className]="'show-timer' + (showTimer?' active':'')" (click)="onToggleTimer()"></control>
+            <control title="Fullscreen" [className]="'fullscreen' + (fullscreen?' active':'')" (click)="onToggleFullscreen()"></control>
+            <control title="Mute" [className]="(mute==2?'hivol':(mute==1?'lowvol':'mute'))" (click)="onToggleMute()"></control>
+        </group>
+    </controls>
+</interface>
+<circle-timer [className]="mouseOver||betweenRounds||showTimer?'fadeIn':timerClass" (timerFinished)="onTimerFinished()" (timerStarted)="onTimerStarted()" (countdownStarted)="onCountdownStarted()">
+        
 </circle-timer>

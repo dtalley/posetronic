@@ -1,5 +1,6 @@
 :host {
-    padding: 20px;
+    padding: 5px;
+    background-color: #333333;
 }
 
 list-item {
@@ -7,8 +8,11 @@ list-item {
     padding: 10px;
     background-color: #FFFFFF;
     color: #000000;
-    border-radius: 5px;
+    border-radius: 2px;
     cursor: pointer;
+    font-size: 16px;
+    overflow-x: hidden;
+    border: 2px solid #FFFFFF;
 }
 
 list-item:hover {
@@ -16,10 +20,11 @@ list-item:hover {
 }
 
 list-item.selected {
-    background-color: #00FF00;
+    border-color: #54cdff;
+    background-color: #def5ff;
     pointer-events: none;
 }
 
 list-item:not(:first-child) {
-    margin-top: 5px;
+    margin-top: 2px;
 }

@@ -1,8 +1,17 @@
 home {
     display: flex;
     flex-direction: row;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 home > * {
     flex-basis: calc(100%/3);
+    overflow-x: hidden;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+home > *:not(:first-child) {
+    border-left: 3px solid #000000;
 }

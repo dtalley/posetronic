@@ -1,3 +1,7 @@
 <div *ngIf="roundData.count">
 {{roundData.count}}x {{roundData.duration}}s
 </div>
+
+<empty *ngIf="!roundData.count && active">
+    Select a round<br />to the left.
+</empty>

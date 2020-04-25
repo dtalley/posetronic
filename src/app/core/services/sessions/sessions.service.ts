@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-enum SessionRoundType {
+export enum SessionRoundType {
   Sketch,
   Rest
 }
@@ -46,13 +46,13 @@ export class SessionsService {
       name: "Gesture",
       rounds: [
         {
-          count: 5,
-          duration: 10,
+          count: 10,
+          duration: 30,
           type: SessionRoundType.Sketch
         },
         {
-          count: 5,
-          duration: 20,
+          count: 6,
+          duration: 120,
           type: SessionRoundType.Sketch
         }
       ]
@@ -82,5 +82,22 @@ export class SessionsService {
 
   getActiveSessionFolder() {
     return this.activeSessionFolder
+  }
+
+  formatDuration(duration) {
+    let hours = Math.floor(duration / (60 * 60))
+    duration -= hours * 60 * 60;
+    let minutes = Math.floor(duration / 60);
+    duration -= minutes * 60;
+    if(hours < 2) {
+      minutes += hours * 60;
+      hours = 0;
+    }
+    if(minutes < 2 && hours == 0) {
+      duration += minutes * 60;
+      minutes = 0;
+    }
+    
+    return (hours>0?hours+"h ":"") + (minutes>0?minutes+"m ":"") + (duration>0?duration+"s":"");
   }
 }

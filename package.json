@@ -92,5 +92,7 @@
   "engines": {
     "node": ">=10.13.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "open-file-explorer": "1.0.2"
+  }
 }

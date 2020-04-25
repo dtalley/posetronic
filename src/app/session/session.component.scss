@@ -4,16 +4,14 @@
     height: 100%;
     top: 0;
     left: 0;
-
-    display: flex;
-    flex-direction: column;
 }
 
 image {
-    display: block;
-    flex-grow: 1;
-    padding: 2px;
+    position: absolute;
+    width: 100%;
+    height: 100%;
     background-color: #000000;
+    box-sizing: border-box;
 }
 
 image > div {
@@ -25,14 +23,34 @@ image > div {
     background-position: 50% 50%;
 }
 
-image > div.fadeOut {
-    animation: fadeOut 1s linear 1;
+image.grayscale {
+    filter: grayscale(100%);
+}
+
+image.mirror {
+    transform: scaleX(-1);
+}
+
+image.mirrorY {
+    transform: scaleY(-1);
+}
+
+image.mirror.mirrorY {
+    transform: scale(-1,-1);
+}
+
+.fadeOut {
+    animation: fadeOut .3s linear 1;
     opacity: 0
 }
 
-image > div.fadeIn {
-    animation: fadeIn 1s linear 1;
+.fadeIn {
+    animation: fadeIn .3s linear 1;
     opacity: 1
+}
+
+.nopacity {
+    opacity: 0
 }
 
 @keyframes fadeOut {
@@ -45,8 +63,203 @@ image > div.fadeIn {
     to { opacity: 1; }
 }
 
+interface {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+info {
+    position: absolute;
+    bottom: 60px;
+    left: 20px;
+    background-color: #333333;
+    border-radius: 5px;
+    border-top: 1px solid #888888;
+    border-right: 1px solid #666666;
+    max-width: 60%;
+    box-sizing: border-box;
+    padding: 10px;
+    color: #888888;
+    font-size: 11px;
+    word-wrap: break-word;
+}
+
 controls {
-    flex-basis: 40px;
+    position: absolute;
+    width: 100%;
+    height: 44px;
+    background-color: #444444;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    padding: 5px;
+    box-sizing: border-box;
+    border-top: 4px solid #999999;
+    box-shadow: 0px -10px 10px rgba(0,0,0,.4);
+
+    group {
+        display: inline-block;
+    }
+
+    group:not(:first-child) {
+        margin-left: 50px;
+    }
+
+    control, label {
+        display: inline-block;
+        height: 30px;
+        width: 30px;
+        text-align: center;
+        line-height: 30px;
+        box-sizing: border-box;
+    }
+
+    label {
+        
+        color: #FFFFFF;
+    }
+
+    spacer {
+        width: 5px;
+        height: 30px;
+        display: inline-block;
+        border-right: 1px solid #333333;
+        margin-right: 3px;
+        line-height: 30px;
+        overflow-x: hidden;
+        vertical-align: top;
+    }
+
+    spacer:before {
+        content: ' ';
+    }
+
+    control {
+        border-radius: 2px;
+        background-color: #888888;
+        border: 1px solid #888888;
+        cursor: pointer;
+    }
+
+    label.image:before {
+        content: '\f302'
+    }
+
+    control.disabled {
+        background-color: #444444;
+        pointer-events: none;
+        border-color: #555555;
+    }
+
+    control.disabled:before {
+        color: #555555;
+    }
+
+    control:before,
+    label:before {
+        font-family: fontawesome;
+        font-size: 15px;
+        color: #FFFFFF;
+    }
+
+    control:not(:first-child) {
+        margin-left: 2px;
+    }
+
+    control:hover {
+        background-color: #666666
+    }
+
+    control:active {
+        background-color: #333333
+    }
+
+    control.prev-image:before {
+        content: '\f060'
+    }
+
+    control.prev-round:before {
+        content: '\f04a'
+    }
+
+    control.pause:before {
+        content: '\f04c'
+    }
+
+    control.play:before {
+        content: '\f04b'
+    }
+
+    control.next-image:before {
+        content: '\f061'
+    }
+
+    control.next-round:before {
+        content: '\f04e'
+    }
+
+    control.restart:before {
+        content: '\f01e'
+    }
+
+    control.show-timer:before {
+        content: '\f2f2'
+    }
+
+    control.fullscreen:before {
+        content: '\f065'
+    }
+
+    control.mute:before {
+        content: '\f6a9'
+    }
+
+    control.hivol:before {
+        content: '\f028'
+    }
+
+    control.lowvol:before {
+        content: '\f027'
+    }
+
+    control.grayscale:before {
+        content: '\f042'
+    }
+
+    control.mirror:before {
+        content: '\f337'
+    }
+
+    control.mirrorY:before {
+        content: '\f338';
+    }
+
+    control.open:before {
+        content: '\f07c'
+    }
+
+    control.delete:before {
+        content: '\f1f8'
+    }
+
+    control.exit:before {
+        content: '\f3e5'
+    }
+
+    control.active {
+        background-color: #54cdff;
+        border-color: #54cdff;
+    }
+
+    control.active:hover {
+        background-color: #31aadc
+    }
+
+    control.active:active {
+        background-color: #1c6f91
+    }
 }
 
 circle-timer {
@@ -55,4 +268,18 @@ circle-timer {
     right: 20px;
     width: 100px;
     height: 100px;
+}
+
+time {
+    display: block;
+    position: absolute;
+    top: 140px;
+    right: 20px;
+    color: #AAAAAA;
+    font-size: 30px;
+    padding: 10px 30px;
+    background-color: #333333;
+    border-top: 2px solid #888888;
+    border-right: 2px solid #666666;
+    border-radius: 5px;
 }

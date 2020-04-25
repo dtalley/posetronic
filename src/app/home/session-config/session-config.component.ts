@@ -1,3 +1,4 @@
+import { SessionRoundType } from './../../core/services/sessions/sessions.service';
 import { SessionsService } from '../../core/services/sessions/sessions.service';
 import { ListItemComponent } from './../../shared/components/list-item/list-item.component';
 import { Component, OnInit } from '@angular/core';
@@ -15,6 +16,8 @@ export class SessionConfigComponent implements OnInit {
   selectedRound: ListItemComponent
   sessionData: any = {}
   selectedFolder = ""
+
+  roundDuration = ""
 
   constructor(
     private sessionsService: SessionsService
@@ -54,9 +57,28 @@ export class SessionConfigComponent implements OnInit {
 
   loadSession(payload: any) {
     this.sessionData = payload || {}
+
+    if(this.sessionData.rounds) {
+      let duration = 0
+      this.sessionData.rounds.forEach(round => {
+        duration += round.duration * round.count;
+      })
+      this.roundDuration = this.sessionsService.formatDuration(duration)
+    }
   }
 
   ngOnInit(): void {
   }
 
+  isRoundSketch(round) {
+    return round.type == SessionRoundType.Sketch;
+  }
+
+  isRoundRest(round) {
+    return round.type == SessionRoundType.Rest;
+  }
+
+  calculateRoundLength(round) {
+    return this.sessionsService.formatDuration(round.duration*round.count);
+  }
 }
