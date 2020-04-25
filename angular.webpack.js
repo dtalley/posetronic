@@ -20,5 +20,11 @@ module.exports = (config, options) => {
         }
     }
 
+    config.module.rules.push({
+        test: /\.wave$|\.mp3$/,
+        exclude: /node_modules/,
+        loader: 'file-loader'
+    });
+
     return config;
 }

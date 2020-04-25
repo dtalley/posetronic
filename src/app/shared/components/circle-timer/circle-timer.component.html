@@ -1,0 +1,7 @@
+<timer [style.--left-percent]="leftPercent" [style.--right-percent]="rightPercent">
+    <padding [className]="paddingClass">
+        <left></left>
+        <right></right>
+        <countdown *ngIf="countdown > 0">{{countdown}}</countdown>
+    </padding>
+</timer>

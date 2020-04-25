@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { CircleTimerComponent } from './../shared/components/circle-timer/circle-timer.component';
+import { Component, ViewChild, AfterViewInit } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router'
 import { SessionsService } from '../core/services/sessions/sessions.service'
 
@@ -6,18 +7,31 @@ import * as fs from "fs";
 import * as path from "path";
 
 @Component({
+  selector: 'app-session',
   templateUrl: './session.component.html',
-  styleUrls: ['./session.component.css']
+  styleUrls: ['./session.component.scss']
 })
-export class SessionComponent implements OnInit {
+export class SessionComponent implements AfterViewInit {
+  @ViewChild(CircleTimerComponent) circleTimer: CircleTimerComponent
+
   sessionFolder: string
   sessionFiles: Array<string> = []
   activeSession: any
   sessionData: any = {}
   currentFile: string
+  encodedFile: string
   private sub: any
   private roundList: Array<any> = []
   intervalHandle: number
+  countdown: number = 0
+  currentIndex = 0
+  imageClass = ""
+
+  private supportedExtensions = [
+    ".jpg",
+    ".png",
+    ".jpeg"
+  ]
 
   constructor(
     private sessionsService: SessionsService,
@@ -25,18 +39,12 @@ export class SessionComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {    
     this.sessionFolder = this.sessionsService.getActiveSessionFolder()
     if(!this.sessionFolder) {
       this.router.navigate(['/home'])
       return;
     }
-
-    let supportedExtensions = [
-      ".jpg",
-      ".png",
-      ".jpeg"
-    ]
     
     this.sub = this.route.params.subscribe(params => {
       this.sessionData = this.sessionsService.getSession(params['sessionId'])
@@ -60,7 +68,7 @@ export class SessionComponent implements OnInit {
           let stats = fs.statSync(fullFile);
           if(stats.isDirectory()) {
             iterateDirectory(fullFile)
-          } else if(supportedExtensions.includes(path.extname(fullFile))) {
+          } else if(this.supportedExtensions.includes(path.extname(fullFile))) {
             fileList.push(fullFile)
           }
         })
@@ -69,9 +77,24 @@ export class SessionComponent implements OnInit {
       iterateDirectory(this.sessionFolder)
 
       this.sessionFiles = fileList
+      this.shuffleFiles()
 
+      this.currentIndex = 0
+      
       this.showNextRound()
     })
+  }
+
+  shuffleFiles() {
+    let j, i = 0
+    var x: string
+
+    for (i = this.sessionFiles.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      x = this.sessionFiles[i];
+      this.sessionFiles[i] = this.sessionFiles[j];
+      this.sessionFiles[j] = x
+    }
   }
 
   showNextRound() {
@@ -79,17 +102,26 @@ export class SessionComponent implements OnInit {
       window.clearInterval(this.intervalHandle)
     }
 
-    if(this.roundList.length == 0 || this.sessionFiles.length == 0) {
+    if(this.currentIndex >= this.roundList.length || 
+      this.currentIndex >= this.sessionFiles.length) {
       this.router.navigate(['/home'])
       return;
     }
 
-    let round = this.roundList.shift()
-    let fileIndex = Math.floor(Math.random()*this.sessionFiles.length)
-    this.currentFile = this.sessionFiles[fileIndex]
-    this.sessionFiles.splice(fileIndex, 1)
-    this.intervalHandle = window.setTimeout(() => {
-      this.intervalHandle = window.setTimeout(this.showNextRound.bind(this), round.duration)
-    }, 1000)
+    let round = this.roundList[this.currentIndex]
+    this.currentFile = this.sessionFiles[this.currentIndex]
+    this.encodedFile = this.currentFile.replace(/\\/g, "\\\\").replace(/ /g, "%20")
+    
+    this.circleTimer.setDuration(round.duration)
+    this.circleTimer.start(5000)
+    this.currentIndex++
+    this.imageClass = "fadeIn"
+  }
+
+  onTimerFinished() {
+    this.imageClass = "fadeOut"
+    this.intervalHandle = window.setTimeout(()=>{
+      this.showNextRound()
+    }, 2000)
   }
 }

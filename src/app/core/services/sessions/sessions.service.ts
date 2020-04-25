@@ -47,12 +47,12 @@ export class SessionsService {
       rounds: [
         {
           count: 5,
-          duration: 2,
+          duration: 10,
           type: SessionRoundType.Sketch
         },
         {
           count: 5,
-          duration: 4,
+          duration: 20,
           type: SessionRoundType.Sketch
         }
       ]

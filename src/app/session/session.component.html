@@ -1,3 +1,11 @@
-<div *ngIf="sessionData.name">
-    <img src="file://{{currentFile}}" />
-</div>
+<image>
+    <div *ngIf="currentFile" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
+
+    </div>
+</image>
+<controls>
+    Test
+</controls>
+<circle-timer (timerFinished)="onTimerFinished()">
+    
+</circle-timer>

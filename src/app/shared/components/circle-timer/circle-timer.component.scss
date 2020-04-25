@@ -1,0 +1,100 @@
+:host {
+    border-radius: 100%;
+    background-color: #222222;
+    border: 5px solid #666666;
+    position: relative;
+    overflow: hidden;
+
+    --left-percent: .5;
+    --right-percent: .5;
+    box-shadow: 0px 0px 5px rgba(0,0,0,.6);
+    animation: fadeIn 1s linear 1;
+}
+
+timer {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    box-sizing: border-box;
+}
+
+padding {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    overflow: hidden;
+    position: relative;
+    box-sizing: border-box;
+}
+
+left,
+right {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+left {
+    left: 50%;
+}
+
+left:before,
+right:before {
+    display: block;
+    position: absolute;
+    content: '';
+    width: 200%;
+    height: 200%;
+}
+
+left:before {
+    background-color: #666666;
+    transform-origin: 0% 50%;
+    transform: translate(0, -25%) rotate(calc(var(--left-percent) * 180deg))
+}
+
+right {
+    right: 50%;
+}
+
+right:before {
+    background-color: #666666;
+    transform-origin: 100% 50%;
+    transform: translate(0, -25%) rotate(calc(var(--right-percent) * 180deg));
+    right: 0;
+}
+
+countdown {
+    display: block;
+    position: absolute;
+    z-index: 100;
+    left: 50%;
+    top: 46%;
+    transform: translate(-50%, -50%);
+    font-size: 60px;
+    font-weight: bold;
+    color: #FFFFFF
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+padding.fadeIn {
+    animation: fadeIn 1s linear 1;
+    opacity: 1;
+}
+
+padding.fadeOut {
+    opacity: 0;
+}
