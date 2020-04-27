@@ -11,3 +11,131 @@ empty {
     color: #666666;
     padding-top: 40px;
 }
+
+index {
+    padding: 10px 10px 5px;
+    text-align: left;
+    font-size: 20px;
+    color: #AAAAAA;
+    display: block;
+}
+
+fragment.full {
+    *:before {
+        margin-right: 10px;
+    }
+
+    sketch:before {
+        font-family: fontawesome;
+        content: '\f303'
+    }
+
+    rest:before {
+        font-family: fontawesome;
+        content: '\f4b8'
+    }
+}
+
+duration {
+    display: flex;
+    flex-direction: row;
+    background-color: #222222;
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px;
+
+    spacer {
+        flex-grow: 1;
+    }
+
+    fragment.time {
+        value {
+            color: #e242d9;
+        }
+    }
+
+    fragment.count {
+        
+    }
+
+    fragment.full {
+        flex-grow: 1;
+
+        * {
+            flex-grow: 1;
+            line-height: 30px;
+            padding: 0px 10px;
+            border-radius: 3px;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        spacer {
+            flex-grow: 0;
+            flex-basis: 2px;
+            visibility: hidden;
+        }
+    }
+
+    fragment:not(:first-child) {
+        margin-left: 4px;
+    }
+
+    fragment {
+        display: flex;
+        flex-direction: column;
+
+        value {
+            font-size: 16px;
+            text-align: center;
+            width: 30px;
+            line-height: 34px;
+
+            tag {
+                font-size: 14px;
+                
+                margin-left: 2px;
+            }
+        }
+
+        increment, decrement {
+            flex-basis: 30px;
+            line-height: 30px;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            width: 30px;
+            box-sizing: border-box;
+        }
+    }
+}
+
+.button {
+    background-color: #777777;
+    border-radius: 3px;
+    border: 2px solid #777777;
+    cursor: pointer;
+}
+
+.button.disabled {
+    background-color: #555555;
+    color: #666666;
+    pointer-events: none;
+}
+
+.button:hover {
+    background-color: #888888;
+}
+
+.button:active {
+    background-color: #666666;
+}
+
+.button.selected {
+    pointer-events: none;
+    border-color: #54cdff;
+    border-color: #54cdff;
+    background-color: #2a85ac !important;
+}

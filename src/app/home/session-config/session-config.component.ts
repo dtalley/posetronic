@@ -1,7 +1,7 @@
 import { SessionRoundType } from './../../core/services/sessions/sessions.service';
 import { SessionsService } from '../../core/services/sessions/sessions.service';
 import { ListItemComponent } from './../../shared/components/list-item/list-item.component';
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren, AfterViewInit, ViewChild, AfterViewChecked } from '@angular/core';
 import { Output, EventEmitter } from '@angular/core';
 
 const { dialog } = require('electron').remote
@@ -11,7 +11,7 @@ const { dialog } = require('electron').remote
   templateUrl: './session-config.component.html',
   styleUrls: ['./session-config.component.scss']
 })
-export class SessionConfigComponent implements OnInit {
+export class SessionConfigComponent implements OnInit, AfterViewChecked {
   @Output() roundSelected = new EventEmitter
   selectedRound: ListItemComponent
   sessionData: any = {}
@@ -19,21 +19,40 @@ export class SessionConfigComponent implements OnInit {
   lastSelected = false
   firstSelected = false
 
+  @ViewChild('name') nameBox;
+
   @ViewChildren(ListItemComponent) private listItems: QueryList<ListItemComponent>;
 
   roundDuration = ""
 
+  editingName = false
+
   constructor(
     private sessionsService: SessionsService
   ) { }
+
+  ngOnInit(): void {
+    
+  }
+
+  ngAfterViewChecked(): void {
+    window.setTimeout(()=>{
+      this.calculateDuration()
+    })
+  }
 
   onRoundSelected(ev: any) {
     if(!this.selectedRound || this.selectedRound != ev.listItem) {
       if(this.selectedRound) {
         this.selectedRound.deselect()
       }
-      this.roundSelected.emit(ev.payload)
       this.selectedRound = ev.listItem
+
+      this.roundSelected.emit({
+        round: ev.payload,
+        index: this.getSelectedRoundIndex()
+      })
+
       if(this.selectedRound) {
         this.selectedRound.select()
         this.firstSelected = this.lastSelected = false;
@@ -60,6 +79,7 @@ export class SessionConfigComponent implements OnInit {
 
   folderSelected(result: any) {
     this.selectedFolder = result.filePaths[0]
+    this.sessionsService.setLastFolder(this.selectedFolder)
   }
 
   onStartSession(ev: any) {
@@ -68,6 +88,7 @@ export class SessionConfigComponent implements OnInit {
 
   loadSession(payload: any) {
     this.sessionData = payload || {}
+    this.selectedFolder = this.sessionsService.getLastFolder()
     this.calculateDuration()    
   }
 
@@ -79,9 +100,6 @@ export class SessionConfigComponent implements OnInit {
       })
       this.roundDuration = this.sessionsService.formatDuration(duration)
     }
-  }
-
-  ngOnInit(): void {
   }
 
   isRoundSketch(round) {
@@ -113,16 +131,9 @@ export class SessionConfigComponent implements OnInit {
       return;
     }
 
-    let index = 0
-    let foundIndex = -1
-    this.listItems.forEach((item) => {
-      if(item == this.selectedRound) {
-        foundIndex = index
-      }
-      index++
-    })
-    if(foundIndex >= 0) {
-      this.sessionsService.deleteRound(this.sessionData.id, foundIndex)
+    let roundIndex = this.getSelectedRoundIndex()
+    if(roundIndex >= 0) {
+      this.sessionsService.deleteRound(this.sessionData.id, roundIndex)
       if(this.selectedRound) {
         this.selectedRound.deselect()
         this.selectedRound = null
@@ -132,11 +143,62 @@ export class SessionConfigComponent implements OnInit {
     }
   }
 
-  onMoveRoundUp() {
+  getSelectedRoundIndex() {
+    let index = 0
+    let foundIndex = -1
+    this.listItems.forEach((item) => {
+      if(item == this.selectedRound) {
+        foundIndex = index
+      }
+      index++
+    })
+    return foundIndex
+  }
 
+  onMoveRoundUp() {
+    let roundIndex = this.getSelectedRoundIndex()
+    if(roundIndex >= 0) {
+      this.reorderRound(roundIndex, -1)
+    }
   }
 
   onMoveRoundDown() {
-    
+    let roundIndex = this.getSelectedRoundIndex()
+    if(roundIndex >= 0) {
+      this.reorderRound(roundIndex, 1)
+    }
+  }
+
+  reorderRound(index, direction) {
+    this.sessionsService.reorderRound(this.sessionData.id, index, direction)
+    window.setTimeout(()=>{
+      let selectedIndex = index + direction
+      this.selectedRound.deselect()
+      this.selectedRound = null
+      this.onRoundSelected({
+        listItem: this.listItems.toArray()[selectedIndex],
+        payload: this.listItems.toArray()[selectedIndex].payload
+      })
+    })
+  }
+
+  onEditName() {
+    if(this.editingName) {
+      return;
+    }
+    this.editingName = true
+    window.setTimeout(()=>{
+      let selection = window.getSelection()
+      let range = document.createRange()
+      range.selectNodeContents(this.nameBox.nativeElement)
+      selection.removeAllRanges()
+      selection.addRange(range)
+    })
+  }
+
+  onNameEdited(newName) {
+    this.sessionsService.setSessionName(this.sessionData.id, newName)
+    this.editingName = false
+    window.getSelection().removeAllRanges()
   }
 }

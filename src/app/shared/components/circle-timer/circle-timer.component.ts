@@ -65,6 +65,7 @@ export class CircleTimerComponent implements OnInit, OnDestroy {
 
     if(this.countdownTime <= 0) {
       this.timerStarted.emit()
+      this.audioStart.currentTime = 0
       this.audioStart.play()
     }
   }
@@ -86,6 +87,7 @@ export class CircleTimerComponent implements OnInit, OnDestroy {
 
       if(this.countdown == 0) {
         this.timerStarted.emit()
+        this.audioStart.currentTime = 0
         this.audioStart.play()
       }
       return;

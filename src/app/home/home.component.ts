@@ -17,7 +17,7 @@ export class HomeComponent implements OnInit {
   onSessionSelected(payload: any): void {
     this.sessionConfig.loadSession(payload)
     this.roundConfig.loadRound(null)
-    this.roundConfig.configure(payload!==null, (payload?payload.editable:false))
+    this.roundConfig.configure(payload.id, payload!==null, (payload?payload.editable:false))
   }
 
   onRoundSelected(payload: any): void {

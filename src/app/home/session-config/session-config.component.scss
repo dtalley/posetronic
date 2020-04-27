@@ -17,6 +17,54 @@ rounds > empty {
     font-size: 14px;
 }
 
+name {
+    padding: 10px;
+    font-size: 20px;
+    color: #FFFFFF;
+    pointer-events: none;
+}
+
+name.editable:before {
+    font-family: fontawesome;
+    content: '\f044';
+    float: right;
+}
+
+name.editable.editing:before {
+    display: none;
+}
+
+name.editing {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+name.editable {
+    pointer-events: all;
+    cursor: pointer;
+}
+
+name.editable:hover {
+    color: #DDDDDD
+}
+
+name.editable:active {
+    color: #AAAAAA
+}
+
+name.editing {
+    cursor: auto;
+    outline: none;
+}
+
+name.editing:hover {
+    color: #000000;
+}
+
+name.editing:active {
+    color: #000000;
+}
+
 session {
     display: flex;
     flex-direction: column;
@@ -86,12 +134,6 @@ list-item > time {
     color: #AAAAAA
 }
 
-name {
-    padding: 10px;
-    font-size: 20px;
-    color: #FFFFFF;
-}
-
 selectFolder {
     display: block;
     padding: 10px;
@@ -135,7 +177,7 @@ length {
     text-align: center;
     padding: 20px;
     font-size: 26px;
-    color: #888888;
+    color: #54cdff;
 }
 
 length > label {

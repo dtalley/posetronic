@@ -42,6 +42,28 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   mirror = false
   mirrorY = false
 
+  restQuote = ""
+  restAuthor = ""
+
+  private restQuotes = [
+    {
+      quote: "Learning to draw is really a matter of learning to see - to see correctly - and that means a good deal more than merely looking with the eye.",
+      author: "Kimon Nicolaides"
+    },
+    {
+      quote: "Drawing is rather like playing chess: your mind races ahead of the moves that you eventually make.",
+      author: "David Hockney"
+    },
+    {
+      quote: "Drawing is the basis of art. A bad painter cannot draw. But one who draws well can always paint.",
+      author: "Arshile Gorky"
+    },
+    {
+      quote: "In drawing, one must look for or suspect that there is more than is casually seen.",
+      author: "George Bridgman"
+    }
+  ]
+
   paused = false
 
   private supportedExtensions = [
@@ -78,10 +100,10 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         let rest = round.type == SessionRoundType.Rest
         for(let i = 0; i < round.count; i++) {
           this.roundList.push({
-            duration: duration,
+            duration: duration<10000?10000:duration,
             rest: rest,
             minutes: minutes,
-            seconds: seconds
+            seconds: duration<10000?10:seconds
           })
         }
       })
@@ -146,37 +168,47 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   showNextRound() {
     this.currentIndex++
-    this.imageIndex++
     
     if(this.intervalHandle) {
       window.clearTimeout(this.intervalHandle)
     }
 
-    if(this.currentIndex >= this.roundList.length || 
-      this.imageIndex >= this.sessionFiles.length) {
+    if(this.currentIndex >= this.roundList.length) {
       this.router.navigate(['/home'])
       return;
     }
 
     let round = this.roundList[this.currentIndex]
     this.currentRound = round
-    this.currentFile = this.sessionFiles[this.imageIndex]
-    this.encodedFile = this.currentFile.replace(/\\/g, "\\\\").replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29")
-    
-    this.circleTimer.setDuration(round.duration)
-    this.circleTimer.start(5000)
-    this.imageClass = "fadeIn"
-    if(this.interfaceClass == "fadeOut" || this.interfaceClass == "nopacity") {
-      this.interfaceClass = "fadeIn"
-    }
-    if(this.timerClass == "nopacity") {
-      this.timerClass = "fadeIn"
-    }
     this.betweenRounds = true
-
+    this.circleTimer.setDuration(round.duration)
+    this.circleTimer.start(round.rest?0:5000)
     if(this.paused) {
       this.onTogglePause()
     }
+
+    if(!round.rest) {
+      this.imageIndex++
+
+      if(this.imageIndex >= this.sessionFiles.length) {
+        this.router.navigate(['/home'])
+        return;
+      }
+
+      this.currentFile = this.sessionFiles[this.imageIndex]
+      this.encodedFile = this.currentFile.replace(/\\/g, "\\\\").replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29")
+    } else {
+      let quoteIndex = Math.round(Math.random()*(this.restQuotes.length-1))
+      this.restQuote = this.restQuotes[quoteIndex].quote
+      this.restAuthor = this.restQuotes[quoteIndex].author
+    }
+
+    this.imageClass = "fadeIn"
+
+    if(this.interfaceClass == "fadeOut" || this.interfaceClass == "nopacity") {
+      this.interfaceClass = "fadeIn"
+    }
+    this.timerClass = "fadeIn"
   }
 
   onTimerFinished() {
@@ -200,9 +232,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.interfaceClass = "fadeOut"
     },1000)
 
-    if(this.currentRound.type != SessionRoundType.Rest) {
-      this.betweenRounds = false;
-    }
+    this.betweenRounds = false;
   }
 
   onCountdownStarted() {
@@ -267,7 +297,11 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   onPreviousRound() {
     if(this.currentIndex > 0) {
-      this.imageIndex -= 2
+      if(!this.roundList[this.currentIndex].rest && !this.roundList[this.currentIndex-1].rest) {
+        this.imageIndex -= 2
+      } else {
+        this.imageIndex -= 1
+      }
       this.currentIndex -= 2
       this.showNextRound()
     }

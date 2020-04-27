@@ -11,7 +11,25 @@ export enum SessionRoundType {
   providedIn: 'root'
 })
 export class SessionsService {
+  lastFolder = null
   sessions = [
+    {
+      id: "gesture",
+      name: "Gesture",
+      editable: false,
+      rounds: [
+        {
+          count: 10,
+          duration: 30,
+          type: SessionRoundType.Sketch
+        },
+        {
+          count: 6,
+          duration: 120,
+          type: SessionRoundType.Sketch
+        }
+      ]
+    },
     {
       id: "standard",
       name: "Standard",
@@ -40,23 +58,6 @@ export class SessionsService {
         {
           count: 1,
           duration: 300,
-          type: SessionRoundType.Sketch
-        }
-      ]
-    },
-    {
-      id: "gesture",
-      name: "Gesture",
-      editable: false,
-      rounds: [
-        {
-          count: 10,
-          duration: 30,
-          type: SessionRoundType.Sketch
-        },
-        {
-          count: 6,
-          duration: 120,
           type: SessionRoundType.Sketch
         }
       ]
@@ -141,7 +142,7 @@ export class SessionsService {
 
   addRound(id) {
     let session = this.getSession(id)
-    if(session.id) {
+    if(session.id && session.editable) {
       session.rounds.push({
         count: 1,
         duration: 30,
@@ -152,8 +153,56 @@ export class SessionsService {
 
   deleteRound(id, index) {
     let session = this.getSession(id)
-    if(session.rounds.length > index) {
+    if(session.rounds.length > index && session.editable) {
       session.rounds.splice(index, 1)
+    }
+  }
+
+  reorderRound(id, index, direction) {
+    let session = this.getSession(id)
+    if(session.rounds.length > index && session.editable) {
+      let moving = session.rounds.splice(index, 1)
+      if(direction < 0) {
+        session.rounds.splice(index-1, 0, moving[0])
+      } else {
+        session.rounds.splice(index+1, 0, moving[0])
+      }
+    }
+  }
+
+  setLastFolder(folder) {
+    this.lastFolder = folder
+  }
+
+  getLastFolder() {
+    return this.lastFolder
+  }
+
+  setSessionName(id, newName) {
+    let session = this.getSession(id)
+    if(session) {
+      session.name = newName
+    }
+  }
+
+  addRoundCount(id, index, count) {
+    let session = this.getSession(id)
+    if(session && index < session.rounds.length) {
+      session.rounds[index].count += count
+    }
+  }
+
+  addRoundTime(id, index, time) {
+    let session = this.getSession(id)
+    if(session && index < session.rounds.length) {
+      session.rounds[index].duration += time
+    }
+  }
+
+  setRoundType(id, index, type) {
+    let session = this.getSession(id)
+    if(session && index < session.rounds.length) {
+      session.rounds[index].type = type;
     }
   }
 }

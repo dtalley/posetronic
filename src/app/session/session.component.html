@@ -1,11 +1,12 @@
-<image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY}">
+<image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY, 'rest': currentRound&&currentRound.rest}">
     <div *ngIf="currentFile" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
 
     </div>
 </image>
+<rest [className]="imageClass" *ngIf="currentRound && currentRound.rest">"{{restQuote}}" <author>-{{restAuthor}}</author></rest>
 <interface [className]="mouseOver||betweenRounds?'fadeIn':interfaceClass">
     <info *ngIf="currentRound">
-        {{currentFile}}
+        {{currentRound.rest?'Rest your brain for a bit.':currentFile}}
     </info>
     <time *ngIf="currentRound">
         {{currentRound.minutes>0?currentRound.minutes+'m ':''}}
@@ -16,12 +17,12 @@
             <control title="Exit" class="exit" (click)="onExit()"></control>
         </group>
         <group>
-            <control title="Open" class="open" (click)="onOpenImage()"></control>
-            <control title="Open" class="delete" (click)="onDeleteImage()"></control>
+            <control [ngClass]="{disabled: currentRound.rest}" title="Open" class="open" (click)="onOpenImage()"></control>
+            <control [ngClass]="{disabled: currentRound.rest}" title="Open" class="delete" (click)="onDeleteImage()"></control>
             <spacer></spacer>
-            <control title="Previous Image" (click)="onPreviousImage()" [className]="'prev-image' + ((imageIndex==0)?' disabled':'')"></control>
+            <control title="Previous Image" (click)="onPreviousImage()" [className]="'prev-image' + ((imageIndex==0 || currentRound.rest)?' disabled':'')"></control>
             <label class="image"></label>
-            <control title="Next Image" (click)="onNextImage()" [className]="'next-image' + ((imageIndex==sessionFiles.length-1)?' disabled':'')"></control>
+            <control title="Next Image" (click)="onNextImage()" [className]="'next-image' + ((imageIndex==sessionFiles.length-1 || currentRound.rest)?' disabled':'')"></control>
             <spacer></spacer>
             <control title="Grayscale" [className]="'grayscale' + (grayscale?' active':'')" (click)="onToggleGrayscale()"></control>
             <control title="Mirror Horizontal" [className]="'mirror' + (mirror?' active':'')" (click)="onToggleMirror()"></control>
@@ -41,6 +42,6 @@
         </group>
     </controls>
 </interface>
-<circle-timer [className]="mouseOver||betweenRounds||showTimer?'fadeIn':timerClass" (timerFinished)="onTimerFinished()" (timerStarted)="onTimerStarted()" (countdownStarted)="onCountdownStarted()">
+<circle-timer [className]="mouseOver||betweenRounds||showTimer||currentRound.rest?'fadeIn':timerClass" (timerFinished)="onTimerFinished()" (timerStarted)="onTimerStarted()" (countdownStarted)="onCountdownStarted()">
         
 </circle-timer>

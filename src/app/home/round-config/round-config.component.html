@@ -1,5 +1,32 @@
-<div *ngIf="roundData.count">
-{{roundData.count}}x {{roundData.duration}}s
+<div *ngIf="roundData.type >= 0">
+    <index>Round #{{roundIndex+1}}</index>
+    <duration>
+        <fragment class="full">
+            <sketch (click)="setRoundType(0)" [ngClass]="{button: true, selected: roundData.type==0}" *ngIf="roundData.type == 0 || editable">Sketch</sketch>
+            <spacer *ngIf="editable"></spacer>
+            <rest (click)="setRoundType(1)" [ngClass]="{button: true, selected: roundData.type==1}" *ngIf="roundData.type == 1 || editable">Rest</rest>
+        </fragment>
+        <fragment class="count" style="margin-left: 10px;">
+            <increment (click)="addCount(1)" class="button" *ngIf="editable">+</increment>
+            <value>{{roundData.count}}<tag>x</tag></value>
+            <decrement (click)="addCount(-1)" [ngClass]="{button: true, disabled: roundData.count<=1}" *ngIf="editable">-</decrement>
+        </fragment>
+        <fragment class="time" style="margin-left: 10px;">
+            <increment (click)="addTime(3600)" class="button" *ngIf="editable">+</increment>
+            <value>{{roundHours}}<tag>h</tag></value>
+            <decrement (click)="addTime(-3600)" [ngClass]="{button: true, disabled: roundHours<=0}" *ngIf="editable">-</decrement>
+        </fragment>
+        <fragment class="time">
+            <increment (click)="addTime(60)" class="button" *ngIf="editable">+</increment>
+            <value>{{roundMinutes}}<tag>m</tag></value>
+            <decrement (click)="addTime(-60)" [ngClass]="{button: true, disabled: roundMinutes<=0}" *ngIf="editable">-</decrement>
+        </fragment>
+        <fragment class="time">
+            <increment (click)="addTime(1)" class="button" *ngIf="editable">+</increment>
+            <value>{{roundSeconds}}<tag>s</tag></value>
+            <decrement (click)="addTime(-1)" [ngClass]="{button: true, disabled: roundData.duration<=0}" *ngIf="editable">-</decrement>
+        </fragment>
+    </duration>
 </div>
 
 <empty *ngIf="!roundData.count && active">

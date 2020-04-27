@@ -1,5 +1,5 @@
 <session *ngIf="sessionData.name">
-    <name>{{sessionData.name}}</name>
+    <name #name (keydown.esc)="onNameEdited(name.innerText)" (keydown.enter)="onNameEdited(name.innerText)" (click)="onEditName()" (blur)="onNameEdited(name.innerText)" [attr.contentEditable]="editingName?'':null" [ngClass]="{editable: sessionData.editable, editing: editingName}">{{sessionData.name}}</name>
     <selectFolder (click)="onChooseFolder($event)" [ngClass]="{hilite: !selectedFolder}">{{selectedFolder?selectedFolder:'Choose A Folder'}}</selectFolder>
     <rounds>
         <empty *ngIf="sessionData.rounds.length==0">
