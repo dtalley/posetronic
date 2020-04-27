@@ -93,6 +93,7 @@
     "node": ">=10.13.0"
   },
   "dependencies": {
-    "open-file-explorer": "1.0.2"
+    "open-file-explorer": "1.0.2",
+    "uuid": "7.0.3"
   }
 }

@@ -1,6 +1,85 @@
 :host {
-    padding: 5px;
     background-color: #333333;
+    display: flex;
+    flex-direction: column;
+}
+
+controls {
+    padding: 5px;
+    background-color: #222222;
+    border-top: 2px solid #666666;
+    display: flex;
+    flex-direction: row;
+}
+
+delete {
+    background-color: #de6a6a;
+    border: 2px solid #de6a6a;
+    margin-left: 5px;
+    border-radius: 2px;
+    text-align: center;
+    width: 30px;
+    box-sizing: border-box;
+    cursor: pointer;
+    color: #FFFFFF;
+    line-height: 24px;
+}
+
+delete.disabled {
+    background-color: #555555;
+    pointer-events: none;
+    color: #777777;
+    border: 2px solid #555555;
+}
+
+delete:hover {
+    background-color: #ed8686;
+}
+
+delete:active {
+    background-color: #c75050;
+}
+
+delete:before {
+    content: '\f1f8';
+    font-family: fontawesome;
+    font-size: 12px;
+}
+
+spacer {
+    flex-grow: 1;
+}
+
+create {
+    display: block;
+    padding: 0px 10px;
+    line-height: 24px;
+    background-color: #51873e;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    border: 2px solid #51873e;
+    color: #FFFFFF;
+    box-sizing: border-box;
+}
+
+create:hover {
+    background-color: #70a45d;
+}
+
+create:active {
+    background-color: #4c6f3f;
+}
+
+create:before {
+    content: '\f067';
+    font-family: fontawesome;
+    margin-right: 10px;
+}
+
+sessions {
+    padding: 5px;
+    overflow-y: auto;
 }
 
 list-item {
@@ -20,11 +99,18 @@ list-item:hover {
 }
 
 list-item.selected {
-    border-color: #54cdff;
+    border-top-color: #54cdff;
+    border-left-color: #54cdff;
     background-color: #def5ff;
     pointer-events: none;
 }
 
 list-item:not(:first-child) {
     margin-top: 2px;
+}
+
+list-item.selected:after {
+    content: '\f00c';
+    font-family: fontawesome;
+    margin-left: 5px;
 }

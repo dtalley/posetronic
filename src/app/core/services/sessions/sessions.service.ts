@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import {v4 as uuidv4 } from "uuid";
+
 export enum SessionRoundType {
   Sketch,
   Rest
@@ -13,6 +15,7 @@ export class SessionsService {
     {
       id: "standard",
       name: "Standard",
+      editable: false,
       rounds: [
         {
           count: 4,
@@ -44,6 +47,7 @@ export class SessionsService {
     {
       id: "gesture",
       name: "Gesture",
+      editable: false,
       rounds: [
         {
           count: 10,
@@ -63,7 +67,7 @@ export class SessionsService {
     return this.sessions;
   }
 
-  getSession(id: string) {
+  getSession(id: string): any {
     let result = {}
     this.sessions.forEach(session => {
       if(session.id == id) {
@@ -85,6 +89,9 @@ export class SessionsService {
   }
 
   formatDuration(duration) {
+    if(duration == 0) {
+      return "0s"
+    }
     let hours = Math.floor(duration / (60 * 60))
     duration -= hours * 60 * 60;
     let minutes = Math.floor(duration / 60);
@@ -99,5 +106,54 @@ export class SessionsService {
     }
     
     return (hours>0?hours+"h ":"") + (minutes>0?minutes+"m ":"") + (duration>0?duration+"s":"");
+  }
+
+  createSession() {
+    let newSession = {
+      id: uuidv4(),
+      name: "New Session",
+      editable: true,
+      rounds: [
+        {
+          count: 1,
+          duration: 30,
+          type: SessionRoundType.Sketch
+        }
+      ]
+    }
+    this.sessions.push(newSession)
+    return newSession;
+  }
+
+  deleteSession(id) {
+    let index = 0;
+    let foundIndex = -1;
+    this.sessions.forEach(session => {
+      if(session.id == id && session.editable) {
+        foundIndex = index
+      }
+      index++
+    })
+    if(foundIndex >= 0) {
+      this.sessions.splice(foundIndex, 1)
+    }
+  }
+
+  addRound(id) {
+    let session = this.getSession(id)
+    if(session.id) {
+      session.rounds.push({
+        count: 1,
+        duration: 30,
+        type: SessionRoundType.Sketch
+      })
+    }
+  }
+
+  deleteRound(id, index) {
+    let session = this.getSession(id)
+    if(session.rounds.length > index) {
+      session.rounds.splice(index, 1)
+    }
   }
 }

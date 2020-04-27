@@ -8,14 +8,16 @@ import { Component, OnInit } from '@angular/core';
 export class RoundConfigComponent implements OnInit {
   roundData: any = {}
   active = false
+  editable = false
   constructor() { }
 
   loadRound(payload: any):void {
     this.roundData = payload || {}
   }
 
-  setActive() {
-    this.active = true
+  configure(newActive, editable) {
+    this.active = newActive
+    this.editable = editable
   }
 
   ngOnInit(): void {

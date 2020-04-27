@@ -2,15 +2,22 @@
     <name>{{sessionData.name}}</name>
     <selectFolder (click)="onChooseFolder($event)" [ngClass]="{hilite: !selectedFolder}">{{selectedFolder?selectedFolder:'Choose A Folder'}}</selectFolder>
     <rounds>
+        <empty *ngIf="sessionData.rounds.length==0">
+            Add a round below to get started!
+        </empty>
         <list-item [ngClass]="{sketch: isRoundSketch(round), rest: isRoundRest(round)}" *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
             <count>{{round.count}}</count>
             <duration>{{sessionsService.formatDuration(round.duration)}}</duration>
             <time>{{calculateRoundLength(round)}}</time>
         </list-item>
     </rounds>
-    <!--<controls>
-        Test
-    </controls>-->
+    <controls *ngIf="sessionData.editable">
+        <create (click)="onAddRound()">Add Round</create>
+        <spacer></spacer>
+        <moveup (click)="onMoveRoundUp()" [ngClass]="{disabled: !selectedRound || firstSelected}"></moveup>
+        <movedown (click)="onMoveRoundDown()" [ngClass]="{disabled: !selectedRound || lastSelected}"></movedown>
+        <delete (click)="onDeleteRound()" [ngClass]="{disabled: !selectedRound}"></delete>
+    </controls>
     <length>
         <label>Time: </label>
         {{roundDuration}}

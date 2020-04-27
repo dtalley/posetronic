@@ -12,6 +12,11 @@ empty {
     padding-top: 40px;
 }
 
+rounds > empty {
+    padding: 15px;
+    font-size: 14px;
+}
+
 session {
     display: flex;
     flex-direction: column;
@@ -22,7 +27,6 @@ rounds {
     display: block;
     padding: 5px;
     background-color: #222222;
-    flex-grow: 1;
 }
 
 list-item {
@@ -162,4 +166,114 @@ start.disabled {
     background-color: #888888;
     color: #AAAAAA;
     border-color: #888888;
+}
+
+controls {
+    padding: 5px;
+    background-color: #222222;
+    border-top: 2px solid #666666;
+    display: flex;
+    flex-direction: row;
+}
+
+delete,
+moveup,
+movedown {
+    border-radius: 2px;
+    text-align: center;
+    line-height: 24px;
+    width: 30px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+movedown, delete {
+    margin-left: 2px;
+}
+
+delete:before,
+moveup:before,
+movedown:before {
+    font-family: fontawesome;
+    font-size: 12px;
+}
+
+delete {
+    background-color: #de6a6a;
+    border: 2px solid #de6a6a;
+    color: #FFFFFF;
+}
+
+delete.disabled,
+moveup.disabled,
+movedown.disabled {
+    background-color: #555555;
+    pointer-events: none;
+    color: #777777;
+    border: 2px solid #555555;
+}
+
+delete:hover {
+    background-color: #ed8686;
+}
+
+delete:active {
+    background-color: #c75050;
+}
+
+moveup, movedown {
+    color: #444444;
+    background-color: #DDDDDD;
+    border: 2px solid #DDDDDD;
+}
+
+moveup:hover, movedown:hover {
+    background-color: #FFFFFF;
+}
+
+moveup:active, movedown:active {
+    background-color: #CCCCCC;
+}
+
+delete:before {
+    content: '\f1f8';
+}
+
+moveup:before {
+    content: '\f062'
+}
+
+movedown:before {
+    content: '\f063'
+}
+
+spacer {
+    flex-grow: 1;
+}
+
+create {
+    display: block;
+    padding: 0px 10px;
+    line-height: 24px;
+    background-color: #51873e;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    border: 2px solid #51873e;
+    color: #FFFFFF;
+    box-sizing: border-box;
+}
+
+create:hover {
+    background-color: #70a45d;
+}
+
+create:active {
+    background-color: #4c6f3f;
+}
+
+create:before {
+    content: '\f067';
+    font-family: fontawesome;
+    margin-right: 10px;
 }

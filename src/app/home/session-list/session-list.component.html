@@ -1,3 +1,10 @@
-<list-item *ngFor="let session of sessions" (selected)="onSessionSelected($event)" [payload]="session">
-    {{session.name}}
-</list-item>
+<sessions>
+    <list-item *ngFor="let session of sessions" (selected)="onSessionSelected($event)" [payload]="session">
+        {{session.name}}
+    </list-item>
+</sessions>
+<controls>
+    <create (click)="onCreateNewSession()">Create Session</create>
+    <spacer></spacer>
+    <delete (click)="onDeleteSession()" [ngClass]="{disabled: !selectedSession || !editable}"></delete>
+</controls>
