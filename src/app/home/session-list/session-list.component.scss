@@ -4,6 +4,27 @@
     flex-direction: column;
 }
 
+logo {
+    padding: 20px;
+    font-size: 30px;
+    color: #CCCCCC;
+    text-align: center;
+    position: relative;
+
+    sub {
+        color: #54cdff
+    }
+}
+
+logo:before {
+    position: absolute;
+    content: 'by Orionark (v1.0)';
+    right: 10px;
+    bottom: 10px;
+    font-size: 12px;
+    color: #888888;
+}
+
 controls {
     padding: 5px;
     background-color: #222222;
@@ -89,7 +110,7 @@ list-item {
     color: #000000;
     border-radius: 2px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 13px;
     overflow-x: hidden;
     border: 2px solid #FFFFFF;
 }

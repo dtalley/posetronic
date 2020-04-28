@@ -1,20 +1,16 @@
 {
-  "name": "angular-electron",
-  "version": "7.0.4",
-  "description": "Angular 9 with Electron (Typescript + SASS + Hot Reload)",
-  "homepage": "https://github.com/maximegris/angular-electron",
+  "name": "posetronic",
+  "version": "1.0.0",
+  "description": "A quicksketch app for artists",
   "author": {
-    "name": "Maxime GRIS",
-    "email": "maxime.gris@gmail.com"
+    "name": "David Talley",
+    "email": "david@orionark.com"
   },
   "keywords": [
-    "angular",
-    "angular 9",
-    "electron",
-    "typescript",
-    "eslint",
-    "spectron",
-    "sass"
+    "art",
+    "drawing",
+    "sketch",
+    "gesture"
   ],
   "main": "main.js",
   "private": true,
@@ -22,11 +18,11 @@
     "postinstall": "electron-builder install-app-deps",
     "ng": "ng",
     "start": "npm-run-all -p electron:serve ng:serve",
-    "build": "npm run electron:serve-tsc && ng build --base-href ./",
+    "build": "npm run electron:serve-tsc && ng build --aot --base-href ./",
     "build:dev": "npm run build -- -c dev",
     "build:prod": "npm run build -- -c production",
-    "ng:serve": "ng serve",
-    "ng:serve:web": "ng serve -c web -o",
+    "ng:serve": "ng serve --aot",
+    "ng:serve:web": "ng serve --aot -c web -o",
     "electron:serve-tsc": "tsc -p tsconfig-serve.json",
     "electron:serve": "wait-on http-get://localhost:4200/ && npm run electron:serve-tsc && electron . --serve",
     "electron:local": "npm run build:prod && electron .",

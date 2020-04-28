@@ -14,10 +14,11 @@ function createWindow(): BrowserWindow {
   win = new BrowserWindow({
     x: 0,
     y: 0,
-    width: 940,
+    width: 590,
     height: 600,
-    minWidth: 940,
-    minHeight: 600,
+    minHeight: 500,
+    minWidth: 590,
+    icon: "/assets/icons/favicon.png",
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,

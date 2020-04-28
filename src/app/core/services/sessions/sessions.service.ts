@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 
 import {v4 as uuidv4 } from "uuid";
 
+import * as electron from "electron"
+import * as path from 'path'
+import * as fs from 'fs'
+
 export enum SessionRoundType {
   Sketch,
   Rest
@@ -81,8 +85,52 @@ export class SessionsService {
 
   activeSessionFolder: string
 
+  constructor() {
+    let userPath = electron.remote.app.getPath('userData')
+    let dataFile = path.join(userPath, "config.json")
+    console.log(dataFile)
+    if(fs.existsSync(dataFile)) {
+      let rawData: string = fs.readFileSync(dataFile, {
+        encoding: "utf8"
+      })
+      let parsed = JSON.parse(rawData)
+      this.sessions.push(...parsed.sessions)
+      this.lastFolder = parsed.folder
+    }
+  }
+
+  savingData = false
+  queueSave = false
+  saveData() {
+    if(this.savingData) {
+      this.queueSave = true
+      return;
+    }
+
+    this.savingData = true
+    let userPath = electron.remote.app.getPath('userData')
+    let dataFile = path.join(userPath, "config.json")
+    let data = {
+      sessions: this.sessions.slice(2),
+      folder: this.lastFolder
+    }
+    let rawData = JSON.stringify(data)
+    fs.writeFile(dataFile, rawData, {
+      encoding: "utf8",
+      flag: "w"
+    }, () => {
+      this.savingData = false;
+      if(this.queueSave) {
+        this.queueSave = false;
+        this.saveData()
+      }
+    })
+  }
+
   setActiveSessionFolder(newFolder: string): void {
     this.activeSessionFolder = newFolder
+
+    
   }
 
   getActiveSessionFolder() {
@@ -123,6 +171,7 @@ export class SessionsService {
       ]
     }
     this.sessions.push(newSession)
+    this.saveData()
     return newSession;
   }
 
@@ -137,6 +186,7 @@ export class SessionsService {
     })
     if(foundIndex >= 0) {
       this.sessions.splice(foundIndex, 1)
+      this.saveData()
     }
   }
 
@@ -148,6 +198,7 @@ export class SessionsService {
         duration: 30,
         type: SessionRoundType.Sketch
       })
+      this.saveData()
     }
   }
 
@@ -155,6 +206,7 @@ export class SessionsService {
     let session = this.getSession(id)
     if(session.rounds.length > index && session.editable) {
       session.rounds.splice(index, 1)
+      this.saveData()
     }
   }
 
@@ -167,11 +219,13 @@ export class SessionsService {
       } else {
         session.rounds.splice(index+1, 0, moving[0])
       }
+      this.saveData()
     }
   }
 
   setLastFolder(folder) {
     this.lastFolder = folder
+    this.saveData()
   }
 
   getLastFolder() {
@@ -182,6 +236,7 @@ export class SessionsService {
     let session = this.getSession(id)
     if(session) {
       session.name = newName
+      this.saveData()
     }
   }
 
@@ -189,6 +244,7 @@ export class SessionsService {
     let session = this.getSession(id)
     if(session && index < session.rounds.length) {
       session.rounds[index].count += count
+      this.saveData()
     }
   }
 
@@ -196,6 +252,7 @@ export class SessionsService {
     let session = this.getSession(id)
     if(session && index < session.rounds.length) {
       session.rounds[index].duration += time
+      this.saveData()
     }
   }
 
@@ -203,6 +260,7 @@ export class SessionsService {
     let session = this.getSession(id)
     if(session && index < session.rounds.length) {
       session.rounds[index].type = type;
+      this.saveData()
     }
   }
 }

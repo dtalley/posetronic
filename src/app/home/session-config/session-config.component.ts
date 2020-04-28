@@ -18,6 +18,7 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
   selectedFolder = ""
   lastSelected = false
   firstSelected = false
+  editable = false
 
   @ViewChild('name') nameBox;
 
@@ -90,6 +91,7 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
     this.sessionData = payload || {}
     this.selectedFolder = this.sessionsService.getLastFolder()
     this.calculateDuration()    
+    this.editable = payload ? payload.editable : false
   }
 
   calculateDuration() {
@@ -200,5 +202,39 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
     this.sessionsService.setSessionName(this.sessionData.id, newName)
     this.editingName = false
     window.getSelection().removeAllRanges()
+  }
+
+  calculateRoundHours(round) {
+    return Math.floor(round.duration / (60*60))
+  }
+
+  calculateRoundMinutes(round) {
+    return Math.floor((round.duration - (this.calculateRoundHours(round)*(60*60))) / 60)
+  }
+
+  calculateRoundSeconds(round) {
+    let hours = this.calculateRoundHours(round)
+    let minutes = this.calculateRoundMinutes(round)
+    return round.duration - (hours * (60*6)) - (minutes * 60)
+  }
+
+  setRoundType(type) {
+    this.sessionsService.setRoundType(this.sessionData.id, this.getSelectedRoundIndex(), type)
+  }
+
+  addCount(count) {
+    this.sessionsService.addRoundCount(this.sessionData.id, this.getSelectedRoundIndex(), count)
+  }
+
+  addTime(time) {
+    this.sessionsService.addRoundTime(this.sessionData.id, this.getSelectedRoundIndex(), time)
+  }
+
+  deselectRound() {
+    
+  }
+
+  reselectRound() {
+        
   }
 }

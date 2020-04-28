@@ -5,10 +5,37 @@
         <empty *ngIf="sessionData.rounds.length==0">
             Add a round below to get started!
         </empty>
-        <list-item [ngClass]="{sketch: isRoundSketch(round), rest: isRoundRest(round)}" *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
+        <list-item [title]="round.type==0?'Sketch':'Rest'" [ngClass]="{sketch: isRoundSketch(round), rest: isRoundRest(round), locked: !editable}" *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
             <count>{{round.count}}</count>
             <duration>{{sessionsService.formatDuration(round.duration)}}</duration>
             <time>{{calculateRoundLength(round)}}</time>
+            <edit>
+                <fragment class="full">
+                    <sketch (click)="setRoundType(0)" [ngClass]="{button: true, selected: round.type==0}" *ngIf="round.type == 0 || editable">Sketch</sketch>
+                    <spacer *ngIf="editable"></spacer>
+                    <rest (click)="setRoundType(1)" [ngClass]="{button: true, selected: round.type==1}" *ngIf="round.type == 1 || editable">Rest</rest>
+                </fragment>
+                <fragment class="count" style="margin-left: 10px;">
+                    <increment (click)="addCount(1)" class="button" *ngIf="editable">+</increment>
+                    <value>{{round.count}}<tag>x</tag></value>
+                    <decrement (click)="addCount(-1)" [ngClass]="{button: true, disabled: round.count<=1}" *ngIf="editable">-</decrement>
+                </fragment>
+                <fragment class="time" style="margin-left: 10px;">
+                    <increment (click)="addTime(3600)" class="button" *ngIf="editable">+</increment>
+                    <value>{{calculateRoundHours(round)}}<tag>h</tag></value>
+                    <decrement (click)="addTime(-3600)" [ngClass]="{button: true, disabled: calculateRoundHours(round)<=0}" *ngIf="editable">-</decrement>
+                </fragment>
+                <fragment class="time">
+                    <increment (click)="addTime(60)" class="button" *ngIf="editable">+</increment>
+                    <value>{{calculateRoundMinutes(round)}}<tag>m</tag></value>
+                    <decrement (click)="addTime(-60)" [ngClass]="{button: true, disabled: calculateRoundMinutes(round)<=0}" *ngIf="editable">-</decrement>
+                </fragment>
+                <fragment class="time">
+                    <increment (click)="addTime(1)" class="button" *ngIf="editable">+</increment>
+                    <value>{{calculateRoundSeconds(round)}}<tag>s</tag></value>
+                    <decrement (click)="addTime(-1)" [ngClass]="{button: true, disabled: round.duration<=0}" *ngIf="editable">-</decrement>
+                </fragment>
+            </edit>
         </list-item>
     </rounds>
     <controls *ngIf="sessionData.editable">

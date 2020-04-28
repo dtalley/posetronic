@@ -17,8 +17,8 @@
             <control title="Exit" class="exit" (click)="onExit()"></control>
         </group>
         <group>
-            <control [ngClass]="{disabled: currentRound.rest}" title="Open" class="open" (click)="onOpenImage()"></control>
-            <control [ngClass]="{disabled: currentRound.rest}" title="Open" class="delete" (click)="onDeleteImage()"></control>
+            <control [ngClass]="{disabled: currentRound.rest}" title="Open File Location" class="open" (click)="onOpenImage()"></control>
+            <control [ngClass]="{disabled: currentRound.rest}" title="Delete This File" class="delete" (click)="onDeleteImage()"></control>
             <spacer></spacer>
             <control title="Previous Image" (click)="onPreviousImage()" [className]="'prev-image' + ((imageIndex==0 || currentRound.rest)?' disabled':'')"></control>
             <label class="image"></label>

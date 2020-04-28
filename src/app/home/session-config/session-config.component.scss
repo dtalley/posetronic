@@ -75,12 +75,14 @@ rounds {
     display: block;
     padding: 5px;
     background-color: #222222;
+    overflow: auto;
 }
 
 list-item {
     display: flex;
     flex-direction: row;
-    padding: 10px;
+    flex-wrap: wrap;
+    padding: 5px;
     background-color: #FFFFFF;
     color: #000000;
     border-radius: 2px;
@@ -96,8 +98,12 @@ list-item:hover {
 
 list-item.selected {
     border: 2px solid #e242d9;
-    pointer-events: none;
+    cursor: default;
     background-color: #ffe5fe;
+}
+
+list-item:not(.selected) > edit {
+    display: none;
 }
 
 list-item:not(:first-child) {
@@ -132,6 +138,20 @@ list-item > count:after {
 
 list-item > time {
     color: #AAAAAA
+}
+
+list-item.locked {
+    pointer-events: none;
+}
+
+list-item.selected {
+    count, duration, time {
+        
+    }
+}
+
+list-item.selected:before {
+    
 }
 
 selectFolder {
@@ -318,4 +338,131 @@ create:before {
     content: '\f067';
     font-family: fontawesome;
     margin-right: 10px;
+}
+
+fragment.full {
+    *:before {
+        margin-right: 10px;
+    }
+
+    font-size: 13px;
+
+    sketch:before {
+        font-family: fontawesome;
+        content: '\f303'
+    }
+
+    rest:before {
+        font-family: fontawesome;
+        content: '\f4b8'
+    }
+}
+
+edit {
+    flex-basis: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+    background-color: #FFFFFF;
+    border: 1px solid #AAAAAA;
+    border-radius: 2px;
+    margin-top: 5px;
+    padding: 5px;
+    pointer-events: all;
+    color: #FFFFFF;
+
+    * {
+        flex-basis: auto;
+    }
+
+    spacer {
+        flex-grow: 1;
+    }
+
+    fragment.time {
+        value {
+            color: #e242d9;
+        }
+    }
+
+    fragment.full {
+        flex-grow: 1;
+
+        * {
+            flex-grow: 1;
+            line-height: 30px;
+            padding: 0px 10px;
+            border-radius: 3px;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        spacer {
+            flex-grow: 0;
+            flex-basis: 2px;
+            visibility: hidden;
+        }
+    }
+
+    fragment:not(:first-child) {
+        margin-left: 4px;
+    }
+
+    fragment {
+        display: flex;
+        flex-direction: column;
+
+        value {
+            font-size: 16px;
+            text-align: center;
+            width: 30px;
+            line-height: 26px;
+            color: #444444;
+
+            tag {
+                font-size: 14px;
+                
+                margin-left: 2px;
+            }
+        }
+
+        increment, decrement {
+            flex-basis: 16px;
+            line-height: 16px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            width: 30px;
+            box-sizing: border-box;
+        }
+    }
+}
+
+.button {
+    background-color: #777777;
+    border-radius: 3px;
+    border: 2px solid #777777;
+    cursor: pointer;
+}
+
+.button.disabled {
+    background-color: #EEEEEE;
+    color: #DDDDDD;
+    pointer-events: none;
+    border-color: #DDDDDD;
+}
+
+.button:hover {
+    background-color: #888888;
+}
+
+.button:active {
+    background-color: #666666;
+}
+
+.button.selected {
+    pointer-events: none;
+    border-color: #e242d9;
+    background-color: #913f8c !important;
 }

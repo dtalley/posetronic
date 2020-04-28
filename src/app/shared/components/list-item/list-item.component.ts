@@ -10,9 +10,19 @@ export class ListItemComponent implements OnInit {
   @Input() payload: any
   @Output() selected = new EventEmitter();
 
-  @HostBinding('class.selected') isSelected: boolean = false
+  @HostBinding('class.hovering') mouseHovering = false
+
+  @HostBinding('class.selected') isSelected = false
 
   constructor() { }
+
+  @HostListener("mouseover") onEnter() {
+    this.mouseHovering = true;
+  }
+
+  @HostListener("mouseout") onLeave() {
+    this.mouseHovering = false
+  }
 
   @HostListener("click") onClick() {
     this.selected.emit({
