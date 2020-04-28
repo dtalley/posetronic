@@ -4,7 +4,7 @@
     </div>
 </image>
 <rest [className]="imageClass" *ngIf="currentRound && currentRound.rest">"{{restQuote}}" <author>-{{restAuthor}}</author></rest>
-<interface [className]="mouseOver||betweenRounds?'fadeIn':interfaceClass">
+<interface [className]="mouseOver||betweenRounds||paused?'fadeIn':interfaceClass">
     <info *ngIf="currentRound">
         {{currentRound.rest?'Rest your brain for a bit.':currentFile}}
     </info>
@@ -13,10 +13,25 @@
         {{currentRound.seconds>0?currentRound.seconds+'s':''}}
     </time>
     <controls *ngIf="currentRound">
-        <group>
+        <top>
+        <group class="left">
             <control title="Exit" class="exit" (click)="onExit()"></control>
         </group>
-        <group>
+        <group class="right">
+            <control title="Show Timer" [className]="'show-timer' + (showTimer?' active':'')" (click)="onToggleTimer()"></control>
+            <control title="Fullscreen" [className]="'fullscreen' + (fullscreen?' active':'')" (click)="onToggleFullscreen()"></control>
+            <control title="Mute" [className]="(mute==2?'hivol':(mute==1?'lowvol':'mute'))" (click)="onToggleMute()"></control>
+        </group>
+        <group style="margin: 0">
+            <control title="Previous Round" (click)="onPreviousRound()" [className]="'prev-round' + ((currentIndex==0)?' disabled':'')"></control>
+            <control [title]="paused?'Resume Round':'Pause Round'" (click)="onTogglePause()" [className]="paused?'play active':'pause'"></control>
+            <control title="Next Round" (click)="onNextRound()" [className]="'next-round' + ((currentIndex==roundList.length-1||imageIndex==sessionFiles.length-1)?' disabled':'')"></control>
+            <spacer></spacer>
+            <control title="Restart Round" (click)="onRestartRound()" class="restart"></control>
+        </group>
+        </top>
+        <bottom>
+        <group style="clear: both; margin: 5px 9px 0 0; text-align: center;">
             <control [ngClass]="{disabled: currentRound.rest}" title="Open File Location" class="open" (click)="onOpenImage()"></control>
             <control [ngClass]="{disabled: currentRound.rest}" title="Delete This File" class="delete" (click)="onDeleteImage()"></control>
             <spacer></spacer>
@@ -28,20 +43,9 @@
             <control title="Mirror Horizontal" [className]="'mirror' + (mirror?' active':'')" (click)="onToggleMirror()"></control>
             <control title="Mirror Vertical" [className]="'mirrorY' + (mirrorY?' active':'')" (click)="onToggleMirrorY()"></control>
         </group>
-        <group>
-            <control title="Previous Round" (click)="onPreviousRound()" [className]="'prev-round' + ((currentIndex==0)?' disabled':'')"></control>
-            <control [title]="paused?'Resume Round':'Pause Round'" (click)="onTogglePause()" [className]="paused?'play active':'pause'"></control>
-            <control title="Next Round" (click)="onNextRound()" [className]="'next-round' + ((currentIndex==roundList.length-1||imageIndex==sessionFiles.length-1)?' disabled':'')"></control>
-            <spacer></spacer>
-            <control title="Restart Round" (click)="onRestartRound()" class="restart"></control>
-        </group>
-        <group>
-            <control title="Show Timer" [className]="'show-timer' + (showTimer?' active':'')" (click)="onToggleTimer()"></control>
-            <control title="Fullscreen" [className]="'fullscreen' + (fullscreen?' active':'')" (click)="onToggleFullscreen()"></control>
-            <control title="Mute" [className]="(mute==2?'hivol':(mute==1?'lowvol':'mute'))" (click)="onToggleMute()"></control>
-        </group>
+        </bottom>
     </controls>
 </interface>
-<circle-timer [className]="mouseOver||betweenRounds||showTimer||currentRound.rest?'fadeIn':timerClass" (timerFinished)="onTimerFinished()" (timerStarted)="onTimerStarted()" (countdownStarted)="onCountdownStarted()">
+<circle-timer [className]="mouseOver||betweenRounds||showTimer||currentRound.rest||paused?'fadeIn':timerClass" (timerFinished)="onTimerFinished()" (timerStarted)="onTimerStarted()" (countdownStarted)="onCountdownStarted()">
         
 </circle-timer>
