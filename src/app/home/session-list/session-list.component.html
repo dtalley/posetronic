@@ -1,12 +1,15 @@
 <logo>
     POS<sub>E</sub>TRONIC
 </logo>
-<sessions>
+<sessions [ngClass]="{trial: trial}">
     <list-item *ngFor="let session of sessions" (selected)="onSessionSelected($event)" [payload]="session">
         {{session.name}}
     </list-item>
 </sessions>
-<controls>
+<trial *ngIf="trial">
+    Thank you for trying Posetronic!  This version omits features like session customization and image manipulation.  If you find it useful, please consider buying the full version!
+</trial>
+<controls *ngIf="!trial">
     <create (click)="onCreateNewSession()">Create Session</create>
     <spacer></spacer>
     <delete (click)="onDeleteSession()" [ngClass]="{disabled: !selectedSession || !editable}"></delete>

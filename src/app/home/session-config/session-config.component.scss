@@ -87,7 +87,7 @@ list-item {
     color: #000000;
     border-radius: 2px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 20px;
     border: 2px solid #FFFFFF;
 }
@@ -113,13 +113,15 @@ list-item:not(:first-child) {
 list-item.sketch:before {
     font-family: fontawesome;
     content: '\f303';
-    margin-right: 5px;
 }
 
 list-item.rest:before {
     font-family: fontawesome;
     content: '\f4b8';
-    margin-right: 5px;
+}
+
+list-item:before {
+    flex-basis: 25px;
 }
 
 list-item > duration {
@@ -414,7 +416,7 @@ edit {
         flex-direction: column;
 
         value {
-            font-size: 16px;
+            font-size: 14px;
             text-align: center;
             width: 30px;
             line-height: 26px;

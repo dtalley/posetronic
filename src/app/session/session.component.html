@@ -17,7 +17,7 @@
         <group class="left">
             <control title="Exit" class="exit" (click)="onExit()"></control>
         </group>
-        <group class="right">
+        <group class="right" *ngIf="!trial">
             <control title="Show Timer" [className]="'show-timer' + (showTimer?' active':'')" (click)="onToggleTimer()"></control>
             <control title="Fullscreen" [className]="'fullscreen' + (fullscreen?' active':'')" (click)="onToggleFullscreen()"></control>
             <control title="Mute" [className]="(mute==2?'hivol':(mute==1?'lowvol':'mute'))" (click)="onToggleMute()"></control>
@@ -31,7 +31,7 @@
         </group>
         </top>
         <bottom>
-        <group style="clear: both; margin: 5px 9px 0 0; text-align: center;">
+        <group style="clear: both; margin: 5px 9px 0 0; text-align: center;" *ngIf="!trial">
             <control [ngClass]="{disabled: currentRound.rest}" title="Open File Location" class="open" (click)="onOpenImage()"></control>
             <control [ngClass]="{disabled: currentRound.rest}" title="Delete This File" class="delete" (click)="onDeleteImage()"></control>
             <spacer></spacer>

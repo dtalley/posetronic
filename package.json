@@ -1,7 +1,7 @@
 {
   "name": "posetronic",
-  "version": "1.0.0",
-  "description": "A quicksketch app for artists",
+  "version": "1.1.0",
+  "description": "A quick sketch and gesture drawing app for artists",
   "author": {
     "name": "David Talley",
     "email": "david@orionark.com"
@@ -21,6 +21,7 @@
     "build": "npm run electron:serve-tsc && ng build --aot --base-href ./",
     "build:dev": "npm run build -- -c dev",
     "build:prod": "npm run build -- -c production",
+    "build:trial": "npm run build -- -c trial",
     "ng:serve": "ng serve --aot",
     "ng:serve:web": "ng serve --aot -c web -o",
     "electron:serve-tsc": "tsc -p tsconfig-serve.json",
@@ -28,6 +29,7 @@
     "electron:local": "npm run build:prod && electron .",
     "electron:linux": "npm run build:prod && electron-builder build --linux",
     "electron:windows": "npm run build:prod && electron-builder build --windows",
+    "electron:windows-trial": "npm run build:trial && electron-builder build --windows --config electron-builder-trial.json",
     "electron:mac": "npm run build:prod && electron-builder build --mac",
     "test": "ng test",
     "e2e": "npm run build:prod && cross-env TS_NODE_PROJECT='e2e/tsconfig.e2e.json' mocha --timeout 300000 --require ts-node/register e2e/**/*.e2e.ts",

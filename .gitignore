@@ -6,6 +6,7 @@
 /out-tsc
 /app-builds
 /release
+/trial
 /screens
 main.js
 src/**/*.js

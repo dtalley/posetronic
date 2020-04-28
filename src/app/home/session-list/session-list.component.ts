@@ -2,6 +2,7 @@ import { ListItemComponent } from './../../shared/components/list-item/list-item
 import { Component, OnInit, AfterViewChecked, QueryList, ViewChildren, AfterContentInit, AfterViewInit } from '@angular/core';
 import { Output, Input, EventEmitter } from '@angular/core';
 import { SessionsService } from '../../core/services/sessions/sessions.service'
+import { AppConfig } from '../../../environments/environment';
 
 @Component({
   selector: 'app-session-list',
@@ -11,6 +12,8 @@ import { SessionsService } from '../../core/services/sessions/sessions.service'
 export class SessionListComponent implements OnInit, AfterViewChecked {
   sessions;
   editable = false
+
+  trial = AppConfig.trial
 
   @ViewChildren(ListItemComponent) private listItems: QueryList<ListItemComponent>;
 

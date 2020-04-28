@@ -209,13 +209,14 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
   }
 
   calculateRoundMinutes(round) {
-    return Math.floor((round.duration - (this.calculateRoundHours(round)*(60*60))) / 60)
+    let hours = this.calculateRoundHours(round)
+    return Math.floor((round.duration - (hours*(60*60))) / 60)
   }
 
   calculateRoundSeconds(round) {
     let hours = this.calculateRoundHours(round)
     let minutes = this.calculateRoundMinutes(round)
-    return round.duration - (hours * (60*6)) - (minutes * 60)
+    return round.duration - ((hours * (60*60)) + (minutes * 60))
   }
 
   setRoundType(type) {
@@ -235,6 +236,6 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
   }
 
   reselectRound() {
-        
+
   }
 }

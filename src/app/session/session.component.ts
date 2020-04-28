@@ -1,3 +1,4 @@
+import { AppConfig } from './../../environments/environment';
 import { CircleTimerComponent } from './../shared/components/circle-timer/circle-timer.component';
 import { Component, ViewChild, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router'
@@ -14,6 +15,8 @@ import * as explorer from 'open-file-explorer';
 })
 export class SessionComponent implements AfterViewInit, OnDestroy {
   @ViewChild(CircleTimerComponent) circleTimer: CircleTimerComponent
+
+  trial = AppConfig.trial
 
   sessionFolder: string
   sessionFiles: Array<string> = []

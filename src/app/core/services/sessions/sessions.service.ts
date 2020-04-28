@@ -1,3 +1,4 @@
+import { AppConfig } from './../../../../environments/environment';
 import { Injectable } from '@angular/core';
 
 import {v4 as uuidv4 } from "uuid";
@@ -23,12 +24,12 @@ export class SessionsService {
       editable: false,
       rounds: [
         {
-          count: 10,
+          count: 20,
           duration: 30,
           type: SessionRoundType.Sketch
         },
         {
-          count: 6,
+          count: 10,
           duration: 120,
           type: SessionRoundType.Sketch
         }
@@ -40,27 +41,17 @@ export class SessionsService {
       editable: false,
       rounds: [
         {
-          count: 4,
-          duration: 60,
+          count: 12,
+          duration: 30,
           type: SessionRoundType.Sketch
         },
         {
-          count: 2,
+          count: 7,
           duration: 120,
           type: SessionRoundType.Sketch
         },
         {
-          count: 1,
-          duration: 300,
-          type: SessionRoundType.Sketch
-        },
-        {
-          count: 1,
-          duration: 60,
-          type: SessionRoundType.Rest
-        },
-        {
-          count: 1,
+          count: 2,
           duration: 300,
           type: SessionRoundType.Sketch
         }
@@ -86,6 +77,9 @@ export class SessionsService {
   activeSessionFolder: string
 
   constructor() {
+    if(AppConfig.trial) {
+      return;
+    }
     let userPath = electron.remote.app.getPath('userData')
     let dataFile = path.join(userPath, "config.json")
     console.log(dataFile)
@@ -102,6 +96,10 @@ export class SessionsService {
   savingData = false
   queueSave = false
   saveData() {
+    if(AppConfig.trial) {
+      return;
+    }
+
     if(this.savingData) {
       this.queueSave = true
       return;

@@ -1,8 +1,8 @@
 {
   "productName": "posetronic",
-  "appId": "com.orionark.posetronic",
+  "appId": "com.orionark.posetronictrial",
   "directories": {
-    "output": "release/"
+    "output": "trial/"
   },
   "files": [
       "**/*",

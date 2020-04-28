@@ -16,9 +16,20 @@ logo {
     }
 }
 
+sessions {
+    flex-grow: 1
+}
+
+trial {
+    display: block;
+    padding: 20px;
+    color: #888888;
+    text-align: center;
+}
+
 logo:before {
     position: absolute;
-    content: 'by Orionark (v1.0)';
+    content: 'by Orionark (v1.1)';
     right: 10px;
     bottom: 10px;
     font-size: 12px;
