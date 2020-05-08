@@ -19,6 +19,18 @@ export class SessionsService {
   lastFolder = null
   sessions = [
     {
+      id: "slowgesture",
+      name: "Slow Gesture",
+      editable: false,
+      rounds: [
+        {
+          count: 15,
+          duration: 120,
+          type: SessionRoundType.Sketch
+        }
+      ]
+    },
+    {
       id: "gesture",
       name: "Gesture",
       editable: false,
@@ -58,6 +70,7 @@ export class SessionsService {
       ]
     }
   ];
+  stockSessionCount = 2
   
   getSessions() {
     return this.sessions;
@@ -109,7 +122,7 @@ export class SessionsService {
     let userPath = electron.remote.app.getPath('userData')
     let dataFile = path.join(userPath, "config.json")
     let data = {
-      sessions: this.sessions.slice(2),
+      sessions: this.sessions.slice(this.stockSessionCount),
       folder: this.lastFolder
     }
     let rawData = JSON.stringify(data)
