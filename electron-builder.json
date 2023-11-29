@@ -18,7 +18,9 @@
       "!_config.yml",
       "!karma.conf.js",
       "!tsconfig.json",
-      "!tslint.json"
+      "!tslint.json",
+      "!releases",
+      "!release"
   ],
   "win": {
     "icon": "dist/assets/icons",
