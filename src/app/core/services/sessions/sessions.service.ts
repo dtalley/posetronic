@@ -93,14 +93,9 @@ export class SessionsService {
     if(AppConfig.trial) {
       return;
     }
-    let userPath = electron.remote.app.getPath('userData')
-    let dataFile = path.join(userPath, "config.json")
-    console.log(dataFile)
-    if(fs.existsSync(dataFile)) {
-      let rawData: string = fs.readFileSync(dataFile, {
-        encoding: "utf8"
-      })
-      let parsed = JSON.parse(rawData)
+    const storedData = localStorage.getItem("sessions_config")
+    if(storedData) {
+      let parsed = JSON.parse(storedData)
       this.sessions.push(...parsed.sessions)
       this.lastFolder = parsed.folder
     }
@@ -119,23 +114,12 @@ export class SessionsService {
     }
 
     this.savingData = true
-    let userPath = electron.remote.app.getPath('userData')
-    let dataFile = path.join(userPath, "config.json")
     let data = {
       sessions: this.sessions.slice(this.stockSessionCount),
       folder: this.lastFolder
     }
     let rawData = JSON.stringify(data)
-    fs.writeFile(dataFile, rawData, {
-      encoding: "utf8",
-      flag: "w"
-    }, () => {
-      this.savingData = false;
-      if(this.queueSave) {
-        this.queueSave = false;
-        this.saveData()
-      }
-    })
+    localStorage.setItem("sessions_config", rawData)
   }
 
   setActiveSessionFolder(newFolder: string): void {

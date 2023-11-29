@@ -4,7 +4,7 @@ import { ListItemComponent } from './../../shared/components/list-item/list-item
 import { Component, OnInit, QueryList, ViewChildren, AfterViewInit, ViewChild, AfterViewChecked } from '@angular/core';
 import { Output, EventEmitter } from '@angular/core';
 
-const { dialog } = require('electron').remote
+const { ipcRenderer } = require('electron')
 
 @Component({
   selector: 'app-session-config',
@@ -67,12 +67,9 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  onChooseFolder(ev: any) {
-    let dialogResult = dialog.showOpenDialog({
-      properties: ['openDirectory']
-    })
-
-    dialogResult.then(this.folderSelected.bind(this))
+  async onChooseFolder(ev: any) {
+    let dialogResult = await ipcRenderer.invoke("open-folder-dialog")
+    this.folderSelected(dialogResult)
 
     ev.preventDefault()
     return false

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, ipcMain, dialog, protocol } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs'
@@ -39,6 +39,23 @@ let saveData = () => {
 function createWindow(): BrowserWindow {
 
   const electronScreen = screen;
+
+  protocol.registerFileProtocol("file", (request, cb) => {
+    const url = request.url.replace('file:///', '')
+    const decodedUrl = decodeURI(url)
+    try {
+      return cb(decodedUrl)
+    } catch (error) {
+      console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error)
+    }
+  })
+
+  ipcMain.handle('open-folder-dialog', async () => {
+    let dialogResult = await dialog.showOpenDialog({
+      properties: ['openDirectory']
+    })
+    return dialogResult
+  })
 
   let userPath = app.getPath('userData')
   let dataFile = path.join(userPath, "window.json")
