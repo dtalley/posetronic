@@ -70,7 +70,7 @@ export class SessionsService {
       ]
     }
   ];
-  stockSessionCount = 2
+  stockSessionCount = this.sessions.length
   
   getSessions() {
     return this.sessions;
@@ -96,7 +96,8 @@ export class SessionsService {
     const storedData = localStorage.getItem("sessions_config")
     if(storedData) {
       let parsed = JSON.parse(storedData)
-      this.sessions.push(...parsed.sessions)
+      let parsedFiltered = parsed.sessions.filter((session) => session.editable)
+      this.sessions.push(...parsedFiltered)
       this.lastFolder = parsed.folder
     }
   }
@@ -118,6 +119,7 @@ export class SessionsService {
       sessions: this.sessions.slice(this.stockSessionCount),
       folder: this.lastFolder
     }
+    console.log(data)
     let rawData = JSON.stringify(data)
     localStorage.setItem("sessions_config", rawData)
   }
