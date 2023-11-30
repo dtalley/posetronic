@@ -1,40 +1,43 @@
 <session *ngIf="sessionData.name">
     <name #name (keydown.esc)="onNameEdited(name.innerText)" (keydown.enter)="onNameEdited(name.innerText)" (click)="onEditName()" (blur)="onNameEdited(name.innerText)" [attr.contentEditable]="editingName?'':null" [ngClass]="{editable: sessionData.editable, editing: editingName}">{{sessionData.name}}</name>
-    <selectFolder (click)="onChooseFolder($event)" [ngClass]="{hilite: !selectedFolder}">{{selectedFolder?selectedFolder:'Choose Image Folder'}}</selectFolder>
+    <selectFolder (click)="onChooseFolder($event)" [ngClass]="{hilite: !selectedFolder, clear: !!selectedFolder}">{{selectedFolder?selectedFolder:'Choose Default Image Folder'}}</selectFolder>
     <rounds>
         <empty *ngIf="sessionData.rounds.length==0">
             Add a round below to get started!
         </empty>
-        <list-item [title]="round.type==0?'Sketch':'Rest'" [ngClass]="{sketch: isRoundSketch(round), rest: isRoundRest(round), locked: !editable}" *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
+        <list-item [title]="getRoundTitle(round.type)" [ngClass]="{technical: isRoundTechnical(round), sketch: isRoundSketch(round), rest: isRoundRest(round), locked: !editable}" *ngFor="let round of sessionData.rounds" (selected)="onRoundSelected($event)" [payload]="round">
             <count>{{round.count}}</count>
-            <duration>{{sessionsService.formatDuration(round.duration)}}</duration>
+            <duration [attr.data-value]="getRoundDuration(round)" [ngClass]="{technical: isRoundTechnical(round)}">{{getRoundText(round)}}</duration>
             <time>{{calculateRoundLength(round)}}</time>
             <edit>
                 <fragment class="full">
                     <sketch (click)="setRoundType(0)" [ngClass]="{button: true, selected: round.type==0}" *ngIf="round.type == 0 || editable">Sketch</sketch>
                     <spacer *ngIf="editable"></spacer>
                     <rest (click)="setRoundType(1)" [ngClass]="{button: true, selected: round.type==1}" *ngIf="round.type == 1 || editable">Rest</rest>
+                    <spacer *ngIf="editable"></spacer>
+                    <technical (click)="setRoundType(2)" [ngClass]="{button: true, selected: round.type==2}" *ngIf="round.type == 2 || editable">Technical</technical>
                 </fragment>
                 <fragment class="count" style="margin-left: 10px;">
                     <increment (click)="addCount(1)" class="button" *ngIf="editable">+</increment>
                     <value>{{round.count}}<tag>x</tag></value>
                     <decrement (click)="addCount(-1)" [ngClass]="{button: true, disabled: round.count<=1}" *ngIf="editable">-</decrement>
                 </fragment>
-                <fragment class="time" style="margin-left: 10px;">
+                <fragment *ngIf="round.type != 2" class="time" style="margin-left: 10px;">
                     <increment (click)="addTime(3600)" class="button" *ngIf="editable">+</increment>
                     <value>{{calculateRoundHours(round)}}<tag>h</tag></value>
                     <decrement (click)="addTime(-3600)" [ngClass]="{button: true, disabled: calculateRoundHours(round)<=0}" *ngIf="editable">-</decrement>
                 </fragment>
-                <fragment class="time">
+                <fragment *ngIf="round.type != 2" class="time">
                     <increment (click)="addTime(60)" class="button" *ngIf="editable">+</increment>
                     <value>{{calculateRoundMinutes(round)}}<tag>m</tag></value>
                     <decrement (click)="addTime(-60)" [ngClass]="{button: true, disabled: calculateRoundMinutes(round)<=0}" *ngIf="editable">-</decrement>
                 </fragment>
-                <fragment class="time">
+                <fragment *ngIf="round.type != 2" class="time">
                     <increment (click)="addTime(1)" class="button" *ngIf="editable">+</increment>
                     <value>{{calculateRoundSeconds(round)}}<tag>s</tag></value>
                     <decrement (click)="addTime(-1)" [ngClass]="{button: true, disabled: round.duration<=0}" *ngIf="editable">-</decrement>
                 </fragment>
+                <selectFolder *ngIf="round.type == 0" (click)="onChooseRoundFolder($event)" [ngClass]="{hilite: !round.selectedFolder, clear: !!round.selectedFolder}">{{round.selectedFolder?round.selectedFolder:'Choose Round Image Folder'}}</selectFolder>
             </edit>
         </list-item>
     </rounds>
@@ -49,7 +52,7 @@
         <label>Time: </label>
         {{roundDuration}}
     </length>
-    <start [ngClass]="{disabled: !selectedFolder}" [routerLink]="['/session', sessionData.id]" (click)="onStartSession($event)">Start Drawing!</start>
+    <start [ngClass]="{disabled: !hasSelectedFolders()}" [routerLink]="['/session', sessionData.id]" (click)="onStartSession($event)">Start Drawing!</start>
 </session>
 
 <empty *ngIf="!sessionData.name">

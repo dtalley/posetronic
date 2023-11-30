@@ -19,7 +19,9 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   trial = AppConfig.trial
 
   sessionFolder: string
+  defaultSessionFolder: string
   sessionFiles: Array<string> = []
+  roundImages: Array<string> = []
   activeSession: any
   sessionData: any = {}
   currentFile: string
@@ -82,11 +84,8 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   ) { }
 
   ngAfterViewInit(): void {    
-    this.sessionFolder = this.sessionsService.getActiveSessionFolder()
-    if(!this.sessionFolder) {
-      this.router.navigate(['/home'])
-      return;
-    }
+    this.defaultSessionFolder = this.sessionsService.getActiveSessionFolder()
+    this.sessionFolder = this.defaultSessionFolder
     
     this.sub = this.route.params.subscribe(params => {
       this.sessionData = this.sessionsService.getSession(params['sessionId'])
@@ -106,30 +105,17 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
             duration: duration<10000?10000:duration,
             rest: rest,
             minutes: minutes,
-            seconds: duration<10000?10:seconds
+            seconds: duration<10000?10:seconds,
+            folder: round.selectedFolder
           })
         }
       })
       
       let fileList = []
 
-      let iterateDirectory = (directory) => {      
-        let files = fs.readdirSync(directory)
-        files.forEach(file => {
-          let fullFile = path.join(directory, file)
-          let stats = fs.statSync(fullFile);
-          if(stats.isDirectory()) {
-            iterateDirectory(fullFile)
-          } else if(this.supportedExtensions.includes(path.extname(fullFile))) {
-            fileList.push(fullFile)
-          }
-        })
+      if(this.sessionFolder) {
+        this.iterateDirectory(this.sessionFolder)
       }
-
-      iterateDirectory(this.sessionFolder)
-
-      this.sessionFiles = fileList
-      this.shuffleFiles()
 
       this.currentIndex = -1
       this.imageIndex = -1
@@ -140,6 +126,21 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         this.showNextRound()
       }, 2000)
     })
+  }
+
+  iterateDirectory(directory) {
+    this.sessionFiles = []
+    let files = fs.readdirSync(directory)
+    files.forEach(file => {
+      let fullFile = path.join(directory, file)
+      let stats = fs.statSync(fullFile);
+      if(stats.isDirectory()) {
+        this.iterateDirectory(fullFile)
+      } else if(this.supportedExtensions.includes(path.extname(fullFile))) {
+        this.sessionFiles.push(fullFile)
+      }
+    })
+    this.shuffleFiles()
   }
 
   ngOnDestroy() {
@@ -171,6 +172,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   showNextRound() {
     this.currentIndex++
+    console.log(this.currentIndex)
     
     if(this.intervalHandle) {
       window.clearTimeout(this.intervalHandle)
@@ -190,15 +192,35 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.onTogglePause()
     }
 
-    if(!round.rest) {
-      this.imageIndex++
+    let oldSessionFolder = this.sessionFolder;
+    this.sessionFolder = round.folder
+    if(!this.sessionFolder) {
+      this.sessionFolder = this.defaultSessionFolder
+    }
+    if(!this.sessionFolder) {
+      this.router.navigate(['/home'])
+      return;
+    }
+    if(oldSessionFolder != this.sessionFolder) {
+      this.iterateDirectory(this.sessionFolder)
+      this.imageIndex = -1
+    }
 
-      if(this.imageIndex >= this.sessionFiles.length) {
-        this.router.navigate(['/home'])
-        return;
+    if(!round.rest) {
+      if(this.currentIndex < this.roundImages.length) {
+        this.currentFile = this.roundImages[this.currentIndex]
+      } else {
+        this.imageIndex++
+
+        if(this.imageIndex >= this.sessionFiles.length) {
+          this.router.navigate(['/home'])
+          return;
+        }
+
+        this.currentFile = this.sessionFiles[this.imageIndex]
+        this.roundImages.push(this.currentFile)
       }
 
-      this.currentFile = this.sessionFiles[this.imageIndex]
       this.encodedFile = this.currentFile.replace(/\\/g, "\\\\").replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29")
     } else {
       let quoteIndex = Math.round(Math.random()*(this.restQuotes.length-1))
@@ -311,6 +333,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   }
 
   onNextRound() {
+    console.log(this.currentIndex)
     if(this.currentIndex < this.roundList.length-1) {
       this.showNextRound()
     }

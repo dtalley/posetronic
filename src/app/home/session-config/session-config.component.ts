@@ -68,16 +68,62 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
   }
 
   async onChooseFolder(ev: any) {
-    let dialogResult = await ipcRenderer.invoke("open-folder-dialog")
-    this.folderSelected(dialogResult)
+    if(this.selectedFolder) {
+      this.selectedFolder = null
+      this.sessionsService.setLastFolder(this.selectedFolder)
+    } else {
+      let dialogResult = await ipcRenderer.invoke("open-folder-dialog")
+      this.folderSelected(dialogResult)
+    }
 
     ev.preventDefault()
     return false
   }
 
+  async onChooseRoundFolder(ev: any) {
+    let round = this.sessionData.rounds[this.getSelectedRoundIndex()]
+    if(round.selectedFolder) {
+      this.sessionsService.setRoundFolder(this.sessionData.id, this.getSelectedRoundIndex(), null)
+    } else {
+      let dialogResult = await ipcRenderer.invoke("open-folder-dialog")
+      if(dialogResult.filePaths && dialogResult.filePaths.length > 0) {
+        this.sessionsService.setRoundFolder(this.sessionData.id, this.getSelectedRoundIndex(), dialogResult.filePaths[0])
+      }
+    }
+
+    ev.preventDefault()
+    return false
+  }
+
+  getRoundTitle(type) {
+    if(type === 0) {
+      return "Sketch"
+    } else if(type === 1) {
+      return "Rest"
+    } else if(type === 2) {
+      return "Technical"
+    }
+  }
+
+  hasSelectedFolders() {
+    if(this.selectedFolder) {
+      return true;
+    }
+
+    for(let round of this.sessionData.rounds) {
+      if(round.type == 0 && !round.selectedFolder) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   folderSelected(result: any) {
-    this.selectedFolder = result.filePaths[0]
-    this.sessionsService.setLastFolder(this.selectedFolder)
+    if(result.filePaths && result.filePaths.length > 0) {
+      this.selectedFolder = result.filePaths[0]
+      this.sessionsService.setLastFolder(this.selectedFolder)
+    }
   }
 
   onStartSession(ev: any) {
@@ -95,9 +141,15 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
     if(this.sessionData.rounds) {
       let duration = 0
       this.sessionData.rounds.forEach(round => {
-        duration += round.duration * round.count;
+        if(round.type == 0 || round.type == 1) {
+          duration += round.duration * round.count;
+        }
       })
-      this.roundDuration = this.sessionsService.formatDuration(duration)
+      if(duration > 0) {
+        this.roundDuration = this.sessionsService.formatDuration(duration)
+      } else {
+        this.roundDuration = "---"
+      }
     }
   }
 
@@ -109,8 +161,24 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
     return round.type == SessionRoundType.Rest;
   }
 
+  isRoundTechnical(round) {
+    return round.type == SessionRoundType.Technical;
+  }
+
   calculateRoundLength(round) {
-    return this.sessionsService.formatDuration(round.duration*round.count);
+    if(round.type == 2) {
+      return ""
+    } else {
+      return this.sessionsService.formatDuration(round.duration*round.count);
+    }
+  }
+
+  getRoundDuration(round) {
+    if(round.type == 2) {
+      return "Boxes"
+    } else {
+      return this.sessionsService.formatDuration(round.duration)
+    }
   }
 
   onAddRound() {
@@ -225,7 +293,27 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
   }
 
   addTime(time) {
+    let roundData = this.sessionData.rounds[this.getSelectedRoundIndex()]
+    if(time < 0 && (roundData.duration + time) < 10) {
+      time = 10 - roundData.duration
+    }
     this.sessionsService.addRoundTime(this.sessionData.id, this.getSelectedRoundIndex(), time)
+  }
+
+  getRoundText(round) {
+    if(round.type == 0) {
+      if(round.selectedFolder) {
+        return "Sketch: Custom";
+      } else if(this.selectedFolder) {
+        return "Sketch: Default";
+      } else {
+        return "Sketch"
+      }
+    } else if(round.type == 1) {
+      return "Rest"
+    } else if(round.type == 2) {
+      return "Technical"
+    }
   }
 
   deselectRound() {

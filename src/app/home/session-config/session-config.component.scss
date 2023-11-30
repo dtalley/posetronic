@@ -120,13 +120,27 @@ list-item.rest:before {
     content: '\f4b8';
 }
 
+list-item.technical:before {
+    font-family: fontawesome;
+    content: '\f5ee';
+}
+
 list-item:before {
     flex-basis: 25px;
 }
 
 list-item > duration {
     flex-grow: 1;
+    color: #777777;
+    text-overflow: ellipsis;
+    flex-basis: 0;
+    overflow: hidden;
+}
+
+list-item > duration:before {
+    content: attr(data-value);
     color: #e242d9;
+    margin-right: 15px;
 }
 
 list-item > count {
@@ -166,6 +180,7 @@ selectFolder {
     border-radius: 2px;
     word-wrap: break-word;
     border: 2px solid #666666;
+    position: relative;
 }
 
 selectFolder:before {
@@ -193,6 +208,39 @@ selectFolder.hilite:hover {
 
 selectFolder.hilite:active {
     background-color: #4c6f3f;
+}
+
+selectFolder.clear {
+    padding-right: 40px;
+}
+
+selectFolder.clear:after {
+    content: '\f057';
+    font-family: fontawesome;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translate(0,-50%);
+    font-size: 24px;
+    color: #999999;
+}
+
+selectFolder.clear:hover {
+    background-color: rgb(164, 93, 93);
+    border-color: #873e3e;
+}
+
+selectFolder.clear:hover:after {
+    color: #FFFFFF;
+}
+
+selectFolder.clear:active:after {
+    color: #FFFFFF;
+}
+
+selectFolder.clear:active {
+    background-color: #6f3f3f;
+    border-color: #873e3e;
 }
 
 length {
@@ -351,23 +399,29 @@ fragment.full {
 
     sketch:before {
         font-family: fontawesome;
-        content: '\f303'
+        content: '\f303';
     }
 
     rest:before {
         font-family: fontawesome;
-        content: '\f4b8'
+        content: '\f4b8';
+    }
+
+    technical:before {
+        font-family: fontawesome;
+        content: '\f5ee';
     }
 }
 
 edit {
-    flex-basis: 100%;
     display: flex;
-    flex-flow: row nowrap;
+    flex-wrap: wrap;
+    width: 100%;
     background-color: #FFFFFF;
     border: 1px solid #AAAAAA;
     border-radius: 2px;
     margin-top: 5px;
+    box-sizing: border-box;
     padding: 5px;
     pointer-events: all;
     color: #FFFFFF;
@@ -392,7 +446,7 @@ edit {
         * {
             flex-grow: 1;
             line-height: 30px;
-            padding: 0px 10px;
+            padding: 0px 0px 0px 10px;
             border-radius: 3px;
 
             display: flex;
@@ -438,6 +492,18 @@ edit {
             width: 30px;
             box-sizing: border-box;
         }
+    }
+
+    break {
+        flex-basis: 100%;
+        height: 0;
+    }
+
+    selectfolder {
+        width: 100%;
+        flex-basis: 100%;
+        box-sizing: border-box;
+        margin: 2px 0px 0px 0px;
     }
 }
 

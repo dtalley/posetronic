@@ -11,6 +11,9 @@
       "!LICENSE.md",
       "!package.json",
       "!package-lock.json",
+      "!angular.webpack.js",
+      "!electron-builder-trial.json",
+      "!electron-builder.json",
       "!src/",
       "!e2e/",
       "!hooks/",
@@ -19,9 +22,14 @@
       "!karma.conf.js",
       "!tsconfig.json",
       "!tslint.json",
-      "!releases",
-      "!release",
-      "!trial"
+      "!releases/",
+      "!release/",
+      "!.angular/",
+      "!.angular",
+      "!.npmrc",
+      "!main.js.map",
+      "!tsconfig-serve.json",
+      "!trial/"
   ],
   "win": {
     "icon": "dist/assets/icons",

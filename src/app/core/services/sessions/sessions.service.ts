@@ -9,7 +9,8 @@ import * as fs from 'fs'
 
 export enum SessionRoundType {
   Sketch,
-  Rest
+  Rest,
+  Technical
 }
 
 @Injectable({
@@ -119,7 +120,7 @@ export class SessionsService {
       sessions: this.sessions.slice(this.stockSessionCount),
       folder: this.lastFolder
     }
-    console.log(data)
+    
     let rawData = JSON.stringify(data)
     localStorage.setItem("sessions_config", rawData)
   }
@@ -257,6 +258,14 @@ export class SessionsService {
     let session = this.getSession(id)
     if(session && index < session.rounds.length) {
       session.rounds[index].type = type;
+      this.saveData()
+    }
+  }
+
+  setRoundFolder(id, index, folder) {
+    let session = this.getSession(id)
+    if(session && index < session.rounds.length) {
+      session.rounds[index].selectedFolder = folder;
       this.saveData()
     }
   }
