@@ -4,7 +4,7 @@ import { ListItemComponent } from './../../shared/components/list-item/list-item
 import { Component, OnInit, QueryList, ViewChildren, AfterViewInit, ViewChild, AfterViewChecked } from '@angular/core';
 import { Output, EventEmitter } from '@angular/core';
 
-const { ipcRenderer } = require('electron')
+import { ipcRenderer } from 'electron';
 
 @Component({
   selector: 'app-session-config',

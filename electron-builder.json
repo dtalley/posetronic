@@ -20,7 +20,8 @@
       "!tsconfig.json",
       "!tslint.json",
       "!releases",
-      "!release"
+      "!release",
+      "!trial"
   ],
   "win": {
     "icon": "dist/assets/icons",

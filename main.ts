@@ -37,19 +37,6 @@ let saveData = () => {
 }
 
 function createWindow(): BrowserWindow {
-
-  const electronScreen = screen;
-
-  protocol.registerFileProtocol("file", (request, cb) => {
-    const url = request.url.replace('file:///', '')
-    const decodedUrl = decodeURI(url)
-    try {
-      return cb(decodedUrl)
-    } catch (error) {
-      console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error)
-    }
-  })
-
   ipcMain.handle('open-folder-dialog', async () => {
     let dialogResult = await dialog.showOpenDialog({
       properties: ['openDirectory']
@@ -80,7 +67,8 @@ function createWindow(): BrowserWindow {
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
-      webSecurity: (serve) ? false : true
+      webSecurity: (serve) ? false : true,
+      contextIsolation: false
     },
   });
 
@@ -124,9 +112,6 @@ function createWindow(): BrowserWindow {
 }
 
 try {
-
-  app.allowRendererProcessReuse = true;
-
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
