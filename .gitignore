@@ -52,3 +52,5 @@ package-lock.json
 Thumbs.db
 
 releases/
+
+.angular/*
