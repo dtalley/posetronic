@@ -1,12 +1,24 @@
 import { AppConfig } from './../../environments/environment';
 import { CircleTimerComponent } from './../shared/components/circle-timer/circle-timer.component';
-import { Component, ViewChild, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
+import { Component, ViewChild, AfterViewInit, HostListener, OnDestroy, ElementRef } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router'
 import { SessionsService, SessionRoundType } from '../core/services/sessions/sessions.service'
 
 import * as fs from "fs";
 import * as path from "path";
 import * as explorer from 'open-file-explorer';
+
+let worker = null
+if (typeof Worker !== 'undefined') {
+  // Create a new
+  worker = new Worker(new URL('./session.worker.ts', import.meta.url));
+  worker.onmessage = ({ data }) => {
+    
+  };
+} else {
+  // Web Workers are not supported in this environment.
+  // You should add a fallback so that your program still executes correctly.
+}
 
 @Component({
   selector: 'app-session',
@@ -16,6 +28,9 @@ import * as explorer from 'open-file-explorer';
 export class SessionComponent implements AfterViewInit, OnDestroy {
   @ViewChild(CircleTimerComponent) circleTimer: CircleTimerComponent
 
+  @ViewChild('drawingCanvas', {static: true, read: ElementRef<HTMLCanvasElement>}) canvas: ElementRef<HTMLCanvasElement>
+  offscreenCanvas: OffscreenCanvas = null
+  
   trial = AppConfig.trial
 
   sessionFolder: string
@@ -37,8 +52,8 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   timerClass = "nopacity"
   betweenRounds = true
   mouseOver = false
-  currentRound: any
-
+  currentRound: any = {}
+  
   showTimer = false
   fullscreen = false
   mute = 2
@@ -82,8 +97,18 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router
   ) { }
+    
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.canvas.nativeElement.width = window.innerWidth
+    this.canvas.nativeElement.height = window.innerHeight
+  }
 
   ngAfterViewInit(): void {    
+    this.onResize(null)
+    this.offscreenCanvas = this.canvas.nativeElement.transferControlToOffscreen()
+    worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas }, [this.offscreenCanvas])
+
     this.defaultSessionFolder = this.sessionsService.getActiveSessionFolder()
     this.sessionFolder = this.defaultSessionFolder
     
@@ -91,6 +116,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.sessionData = this.sessionsService.getSession(params['sessionId'])
       this.roundList = []
       this.sessionFiles = []
+      
       this.sessionData.rounds.forEach((round) => {
         let minutes = Math.floor(round.duration/60)
         let seconds = round.duration - (minutes*60)
@@ -106,7 +132,9 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
             rest: rest,
             minutes: minutes,
             seconds: duration<10000?10:seconds,
-            folder: round.selectedFolder
+            folder: round.selectedFolder,
+            type: round.type,
+            exercise: round.exercise
           })
         }
       })
@@ -172,13 +200,15 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   showNextRound() {
     this.currentIndex++
-    console.log(this.currentIndex)
+
+    worker.postMessage({type:"clear"})
     
     if(this.intervalHandle) {
       window.clearTimeout(this.intervalHandle)
     }
 
     if(this.currentIndex >= this.roundList.length) {
+      console.log("Completed all rounds, returning home...")
       this.router.navigate(['/home'])
       return;
     }
@@ -192,27 +222,31 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.onTogglePause()
     }
 
-    let oldSessionFolder = this.sessionFolder;
-    this.sessionFolder = round.folder
-    if(!this.sessionFolder) {
-      this.sessionFolder = this.defaultSessionFolder
-    }
-    if(!this.sessionFolder) {
-      this.router.navigate(['/home'])
-      return;
-    }
-    if(oldSessionFolder != this.sessionFolder) {
-      this.iterateDirectory(this.sessionFolder)
-      this.imageIndex = -1
+    if(round.type != 2) {
+      let oldSessionFolder = this.sessionFolder;
+      this.sessionFolder = round.folder
+      if(!this.sessionFolder) {
+        this.sessionFolder = this.defaultSessionFolder
+      }
+      if(!this.sessionFolder) {
+        console.log("No folder detected for sketching round, returning home...")
+        this.router.navigate(['/home'])
+        return;
+      }
+      if(oldSessionFolder != this.sessionFolder) {
+        this.iterateDirectory(this.sessionFolder)
+        this.imageIndex = -1
+      }
     }
 
-    if(!round.rest) {
+    if(round.type == 1) {
       if(this.currentIndex < this.roundImages.length) {
         this.currentFile = this.roundImages[this.currentIndex]
       } else {
         this.imageIndex++
 
         if(this.imageIndex >= this.sessionFiles.length) {
+          console.log("Exhausted all images for sketching session, returning home...")
           this.router.navigate(['/home'])
           return;
         }
@@ -379,6 +413,29 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     }  else if(unpause) {
       this.onTogglePause()
     }
+  }
+
+  onPointerDown(e) {
+    e.target.setPointerCapture(e.pointerId)
+    worker.postMessage({
+      type: "point",
+      x: e.pageX,
+      y: e.pageY,
+      pressure: e.pressure,
+      start: true
+    })
+  }
+
+  onPointerMove(e) {
+    if (e.buttons !== 1) return;
+
+    worker.postMessage({
+      type: "point",
+      x: e.pageX,
+      y: e.pageY,
+      pressure: e.pressure,
+      start: false
+    })
   }
 
   onExit() {

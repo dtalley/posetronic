@@ -1,7 +1,11 @@
-<image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY, 'rest': currentRound&&currentRound.rest}">
-    <div *ngIf="currentFile" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
+<image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY, 'rest': currentRound&&currentRound.rest, 'technical': currentRound&&currentRound.type==2}">
+    <div *ngIf="currentFile && currentRound.type != 2" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
 
     </div>
+    <img src="../../assets/charcoal.png" style="display: none" />
+    <canvas #drawingCanvas (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)">
+        
+    </canvas>
 </image>
 <rest [className]="imageClass" *ngIf="currentRound && currentRound.rest">"{{restQuote}}" <author>-{{restAuthor}}</author></rest>
 <interface [className]="mouseOver||betweenRounds||paused?'fadeIn':interfaceClass">
@@ -25,13 +29,13 @@
         <group style="margin: 0">
             <control title="Previous Round" (click)="onPreviousRound()" [className]="'prev-round' + ((currentIndex==0)?' disabled':'')"></control>
             <control [title]="paused?'Resume Round':'Pause Round'" (click)="onTogglePause()" [className]="paused?'play active':'pause'"></control>
-            <control title="Next Round" (click)="onNextRound()" [className]="'next-round' + ((currentIndex==roundList.length-1||imageIndex==sessionFiles.length-1)?' disabled':'')"></control>
+            <control title="Next Round" (click)="onNextRound()" [className]="'next-round' + ((currentIndex==roundList.length-1)?' disabled':'')"></control>
             <spacer></spacer>
             <control title="Restart Round" (click)="onRestartRound()" class="restart"></control>
         </group>
         </top>
         <bottom>
-        <group style="clear: both; margin: 5px 9px 0 0; text-align: center;" *ngIf="!trial">
+        <group style="clear: both; margin: 5px 9px 0 0; text-align: center;" *ngIf="!trial && currentRound.type != 2">
             <control [ngClass]="{disabled: currentRound.rest}" title="Open File Location" class="open" (click)="onOpenImage()"></control>
             <control [ngClass]="{disabled: currentRound.rest}" title="Delete This File" class="delete" (click)="onDeleteImage()"></control>
             <spacer></spacer>

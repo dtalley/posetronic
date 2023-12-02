@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen, ipcMain, dialog, protocol } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs'
