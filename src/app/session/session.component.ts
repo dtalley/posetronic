@@ -99,14 +99,20 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    worker.postMessage({
-      type: "resize",
-      width: window.innerWidth,
-      height: window.innerHeight
-    })
+    if(this.currentRound.type == SessionRoundType.Technical) {
+      worker.postMessage({
+        type: "resize",
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
   }
 
-  ngAfterViewInit(): void {   
+  createDrawingCanvas(): void {
+    if(this.canvas) {
+      this.canvasHolder.nativeElement.removeChild(this.canvas)
+    }
+
     this.canvas = document.createElement("canvas") 
     this.canvas.style.width = "100%"
     this.canvas.style.height = "100%"
@@ -120,6 +126,9 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
     this.offscreenCanvas = this.canvas.transferControlToOffscreen()
     worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas, scale: window.devicePixelRatio }, [this.offscreenCanvas])
+  }
+
+  ngAfterViewInit(): void {   
     worker.onmessage = ({ data }) => {
       if(data.type == "resized") {
         this.canvasHolder.nativeElement.removeChild(this.canvas)
@@ -136,7 +145,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas, existingImage: data.bitmap, scale: window.devicePixelRatio }, [this.offscreenCanvas, data.bitmap])
       }
     };
-
+    
     this.defaultSessionFolder = this.sessionsService.getActiveSessionFolder()
     this.sessionFolder = this.defaultSessionFolder
     
@@ -228,8 +237,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   showNextRound() {
     this.currentIndex++
-
-    worker.postMessage({type:"clear"})
     
     if(this.intervalHandle) {
       window.clearTimeout(this.intervalHandle)
@@ -250,7 +257,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.onTogglePause()
     }
 
-    if(round.type != 2) {
+    if(round.type != SessionRoundType.Technical) {
       let oldSessionFolder = this.sessionFolder;
       this.sessionFolder = round.folder
       if(!this.sessionFolder) {
@@ -265,9 +272,11 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         this.iterateDirectory(this.sessionFolder)
         this.imageIndex = -1
       }
+    } else {
+      this.createDrawingCanvas()
     }
-
-    if(round.type == 1) {
+    
+    if(round.type == SessionRoundType.Sketch) {
       if(this.currentIndex < this.roundImages.length) {
         this.currentFile = this.roundImages[this.currentIndex]
       } else {
@@ -282,6 +291,8 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         this.currentFile = this.sessionFiles[this.imageIndex]
         this.roundImages.push(this.currentFile)
       }
+
+      console.log(this.currentFile)
 
       this.encodedFile = this.currentFile.replace(/\\/g, "\\\\").replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29")
     } else {
