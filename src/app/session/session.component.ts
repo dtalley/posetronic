@@ -7,6 +7,7 @@ import { SessionsService, SessionRoundType } from '../core/services/sessions/ses
 import * as fs from "fs";
 import * as path from "path";
 import * as explorer from 'open-file-explorer';
+import {screen} from "electron";
 
 let worker = null
 if (typeof Worker !== 'undefined') {
@@ -107,26 +108,32 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {   
     this.canvas = document.createElement("canvas") 
+    this.canvas.style.width = "100%"
+    this.canvas.style.height = "100%"
     this.canvas.addEventListener("pointerdown", this.onPointerDown)
     this.canvas.addEventListener("pointermove", this.onPointerMove)
-    this.canvas.width = window.innerWidth
-    this.canvas.height = window.innerHeight
+    this.canvas.addEventListener("pointercancel", this.onPointerCancel)
+    this.canvas.width = window.innerWidth * window.devicePixelRatio
+    this.canvas.height = window.innerHeight * window.devicePixelRatio
 
     this.canvasHolder.nativeElement.appendChild(this.canvas)
 
     this.offscreenCanvas = this.canvas.transferControlToOffscreen()
-    worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas }, [this.offscreenCanvas])
+    worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas, scale: window.devicePixelRatio }, [this.offscreenCanvas])
     worker.onmessage = ({ data }) => {
       if(data.type == "resized") {
         this.canvasHolder.nativeElement.removeChild(this.canvas)
         this.canvas = document.createElement("canvas")
+        this.canvas.style.width = "100%"
+        this.canvas.style.height = "100%"
         this.canvas.addEventListener("pointerdown", this.onPointerDown)
         this.canvas.addEventListener("pointermove", this.onPointerMove)
-        this.canvas.width = data.width
-        this.canvas.height = data.height
+        this.canvas.addEventListener("pointercancel", this.onPointerCancel)
+        this.canvas.width = data.width * window.devicePixelRatio
+        this.canvas.height = data.height * window.devicePixelRatio
         this.canvasHolder.nativeElement.appendChild(this.canvas)
         this.offscreenCanvas = this.canvas.transferControlToOffscreen()
-        worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas, existingImage: data.bitmap }, [this.offscreenCanvas, data.bitmap])
+        worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas, existingImage: data.bitmap, scale: window.devicePixelRatio }, [this.offscreenCanvas, data.bitmap])
       }
     };
 
@@ -456,6 +463,10 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       pressure: e.pressure,
       start: false
     })
+  }
+
+  onPointerCancel(e) {
+    console.log("Pointer events canceled...")
   }
 
   onExit() {

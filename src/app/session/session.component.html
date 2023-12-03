@@ -1,9 +1,8 @@
 <image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY, 'rest': currentRound&&currentRound.rest, 'technical': currentRound&&currentRound.type==2}">
-    <div *ngIf="currentFile && currentRound.type != 2" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
+    <div #imageHolder id="imageHolder" *ngIf="currentFile && currentRound.type != 2" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
 
     </div>
-    <img src="../../assets/charcoal.png" style="display: none" />
-    <div #canvasHolder>
+    <div #canvasHolder id="canvasHolder">
         
     </div>
 </image>

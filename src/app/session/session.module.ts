@@ -10,5 +10,5 @@ import { SharedModule } from '../shared/shared.module';
   declarations: [SessionComponent],
   imports: [CommonModule, SharedModule, SessionRoutingModule],
   schemas: [NO_ERRORS_SCHEMA]
-})//
+})
 export class SessionModule {}
