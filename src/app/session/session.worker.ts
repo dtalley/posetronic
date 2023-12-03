@@ -13,6 +13,7 @@ let offsetUniform: WebGLUniformLocation
 let pressureUniform: WebGLUniformLocation
 let textureUniform: WebGLUniformLocation
 let brushSizeUniform: WebGLUniformLocation
+let jitterUniform: WebGLUniformLocation
 let lastPoint
 
 let texture: WebGLTexture
@@ -94,6 +95,7 @@ let fetchShaders = async () => {
   pressureUniform = gl.getUniformLocation(shaderProgram, "u_pressure")
   brushSizeUniform = gl.getUniformLocation(shaderProgram, "u_brushSize")
   textureUniform = gl.getUniformLocation(shaderProgram, "u_texture")
+  jitterUniform = gl.getUniformLocation(shaderProgram, "u_jitter")
 }
 
 let vao: WebGLVertexArrayObject
@@ -143,9 +145,9 @@ let configureCanvas = async (data) => {
     gl.clear(gl.COLOR_BUFFER_BIT)
     gl.useProgram(shaderProgram)
     gl.uniform2f(resolutionUniform, canvas.width, canvas.height)
-    console.log(canvas.width, canvas.height, data.scale)
     gl.uniform1i(textureUniform, 0)
     gl.uniform1i(brushSizeUniform, 30)
+    gl.uniform4f(jitterUniform, .4, .7, 0, 1.0)
     gl.bindVertexArray(vao)
     gl.enable(gl.BLEND)
     gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
