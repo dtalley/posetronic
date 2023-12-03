@@ -11,10 +11,7 @@ import * as explorer from 'open-file-explorer';
 let worker = null
 if (typeof Worker !== 'undefined') {
   // Create a new
-  worker = new Worker(new URL('./session.worker.ts', import.meta.url));
-  worker.onmessage = ({ data }) => {
-    
-  };
+  worker = new Worker(new URL('./session.worker.ts', import.meta.url), {type: "module"});
 } else {
   // Web Workers are not supported in this environment.
   // You should add a fallback so that your program still executes correctly.
@@ -28,7 +25,7 @@ if (typeof Worker !== 'undefined') {
 export class SessionComponent implements AfterViewInit, OnDestroy {
   @ViewChild(CircleTimerComponent) circleTimer: CircleTimerComponent
 
-  @ViewChild('drawingCanvas', {static: true, read: ElementRef<HTMLCanvasElement>}) canvas: ElementRef<HTMLCanvasElement>
+  @ViewChild('canvasHolder', {static: true, read: ElementRef<HTMLElement>}) canvasHolder: ElementRef<HTMLElement>
   offscreenCanvas: OffscreenCanvas = null
   
   trial = AppConfig.trial
@@ -53,6 +50,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   betweenRounds = true
   mouseOver = false
   currentRound: any = {}
+  canvas: HTMLCanvasElement
   
   showTimer = false
   fullscreen = false
@@ -100,14 +98,37 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    this.canvas.nativeElement.width = window.innerWidth
-    this.canvas.nativeElement.height = window.innerHeight
+    worker.postMessage({
+      type: "resize",
+      width: window.innerWidth,
+      height: window.innerHeight
+    })
   }
 
-  ngAfterViewInit(): void {    
-    this.onResize(null)
-    this.offscreenCanvas = this.canvas.nativeElement.transferControlToOffscreen()
+  ngAfterViewInit(): void {   
+    this.canvas = document.createElement("canvas") 
+    this.canvas.addEventListener("pointerdown", this.onPointerDown)
+    this.canvas.addEventListener("pointermove", this.onPointerMove)
+    this.canvas.width = window.innerWidth
+    this.canvas.height = window.innerHeight
+
+    this.canvasHolder.nativeElement.appendChild(this.canvas)
+
+    this.offscreenCanvas = this.canvas.transferControlToOffscreen()
     worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas }, [this.offscreenCanvas])
+    worker.onmessage = ({ data }) => {
+      if(data.type == "resized") {
+        this.canvasHolder.nativeElement.removeChild(this.canvas)
+        this.canvas = document.createElement("canvas")
+        this.canvas.addEventListener("pointerdown", this.onPointerDown)
+        this.canvas.addEventListener("pointermove", this.onPointerMove)
+        this.canvas.width = data.width
+        this.canvas.height = data.height
+        this.canvasHolder.nativeElement.appendChild(this.canvas)
+        this.offscreenCanvas = this.canvas.transferControlToOffscreen()
+        worker.postMessage({ type:"canvas", canvas: this.offscreenCanvas, existingImage: data.bitmap }, [this.offscreenCanvas, data.bitmap])
+      }
+    };
 
     this.defaultSessionFolder = this.sessionsService.getActiveSessionFolder()
     this.sessionFolder = this.defaultSessionFolder
@@ -367,7 +388,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   }
 
   onNextRound() {
-    console.log(this.currentIndex)
     if(this.currentIndex < this.roundList.length-1) {
       this.showNextRound()
     }

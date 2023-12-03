@@ -4,10 +4,25 @@
 // to pick one. highp is a good default. It means "high precision"
 precision highp float;
  
+in vec2 v_texcoord;
+in vec2 v_mouse;
+flat in int v_brushSize;
+flat in vec2 v_resolution;
+flat in vec2 v_offset;
+
+uniform sampler2D u_texture;
+uniform float u_pressure;
+
 // we need to declare an output for the fragment shader
 out vec4 outColor;
- 
+
 void main() {
-  // Just set the output to a constant reddish-purple
-  outColor = vec4(1, 0, 0.5, 1);
+    float useBrushSize = float(v_brushSize) * mix(.2, 1.0, u_pressure);
+    vec2 useCoord = ((v_texcoord) + 1.0) / 2.0;
+    float dist = distance(v_texcoord * v_resolution * 2.0, v_mouse * v_resolution * 2.0);
+    float strength = 1.0 - clamp(dist / float(useBrushSize), 0.0, 1.0);
+    ivec2 size = textureSize(u_texture, 0);
+    vec2 ratio = v_resolution / vec2(float(size.x), float(size.y));
+    vec4 result = texture(u_texture, useCoord * ratio);
+    outColor = vec4(result.x, result.y, result.z, strength * mix(.3, 1.0, u_pressure));
 }

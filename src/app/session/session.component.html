@@ -3,9 +3,9 @@
 
     </div>
     <img src="../../assets/charcoal.png" style="display: none" />
-    <canvas #drawingCanvas (pointerdown)="onPointerDown($event)" (pointermove)="onPointerMove($event)">
+    <div #canvasHolder>
         
-    </canvas>
+    </div>
 </image>
 <rest [className]="imageClass" *ngIf="currentRound && currentRound.rest">"{{restQuote}}" <author>-{{restAuthor}}</author></rest>
 <interface [className]="mouseOver||betweenRounds||paused?'fadeIn':interfaceClass">
