@@ -283,6 +283,7 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
   }
 
   onUnsplashEdited(event) {
+    console.log("Unsplash edited")
     let newQuery = event.target.innerText
     this.sessionsService.setRoundUnsplashEditing(this.sessionData.id, this.getSelectedRoundIndex(), false)
     this.sessionsService.setRoundUnsplashQuery(this.sessionData.id, this.getSelectedRoundIndex(), newQuery)

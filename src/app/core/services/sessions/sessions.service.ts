@@ -100,28 +100,22 @@ export class SessionsService {
       let parsedFiltered = parsed.sessions.filter((session) => session.editable)
       this.sessions.push(...parsedFiltered)
       this.lastFolder = parsed.folder
+      console.log(this.sessions)
     }
   }
 
-  savingData = false
-  queueSave = false
-  saveData() {
+  async saveData() {
     if(AppConfig.trial) {
       return;
     }
 
-    if(this.savingData) {
-      this.queueSave = true
-      return;
-    }
-
-    this.savingData = true
     let data = {
       sessions: this.sessions.slice(this.stockSessionCount),
       folder: this.lastFolder
     }
     
     let rawData = JSON.stringify(data)
+    console.log(rawData)
     localStorage.setItem("sessions_config", rawData)
   }
 
@@ -279,7 +273,6 @@ export class SessionsService {
   }
 
   setRoundUnsplashQuery(id, index, query) {
-    console.log(query);
     let session = this.getSession(id)
     if(session && index < session.rounds.length) {
       session.rounds[index].unsplashQuery = query;

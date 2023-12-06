@@ -273,12 +273,12 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         if(oldUnsplashQuery != this.unsplashQuery) {
           const res = await fetch('https://or2ux34au1.execute-api.us-west-2.amazonaws.com/default/PosetronicUnsplashSearch?' + new URLSearchParams({
             query: round.query,
-            per_page: "50",
-            total: "20"
+            per_page: "100",
+            total: "100"
           }));
           if (res.ok) {
             const data = await res.json();
-            console.log(data);
+            console.log(data.length, " images found from Unsplash");
             this.sessionFiles = []
             for(let result of data) {
               this.sessionFiles.push({
@@ -317,7 +317,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     }
     
     if(round.type == SessionRoundType.Sketch) {
-      if(this.currentIndex < this.roundImages.length) {
+      if(this.currentIndex < this.roundImages.length && this.roundImages[this.currentIndex]) {
         this.currentFile = this.roundImages[this.currentIndex]
       } else {
         this.imageIndex++
@@ -329,7 +329,11 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
         }
 
         this.currentFile = this.sessionFiles[this.imageIndex]
-        this.roundImages.push(this.currentFile)
+        if(this.currentIndex >= this.roundImages.length) {
+          this.roundImages.push(this.currentFile)
+        } else {
+          this.roundImages[this.currentIndex] = this.currentFile
+        }
       }
 
       console.log(this.currentFile)
@@ -441,6 +445,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   onPreviousImage() {
     if(this.imageIndex > 0) {
       this.imageIndex -= 2
+      this.roundImages[this.currentIndex] = null
       this.currentIndex -= 1
       this.showNextRound()
     }
@@ -448,6 +453,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   onNextImage() {
     if(this.imageIndex < this.sessionFiles.length-1) {
+      this.roundImages[this.currentIndex] = null
       this.currentIndex -= 1
       this.showNextRound()
     }
@@ -455,11 +461,6 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
   onPreviousRound() {
     if(this.currentIndex > 0) {
-      if(!this.roundList[this.currentIndex].rest && !this.roundList[this.currentIndex-1].rest) {
-        this.imageIndex -= 2
-      } else {
-        this.imageIndex -= 1
-      }
       this.currentIndex -= 2
       this.showNextRound()
     }
