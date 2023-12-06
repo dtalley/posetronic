@@ -21,6 +21,7 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
   editable = false
 
   @ViewChild('name') nameBox;
+  @ViewChild('unpublish') unpublishBox;
 
   @ViewChildren(ListItemComponent) private listItems: QueryList<ListItemComponent>;
 
@@ -111,7 +112,7 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
     }
 
     for(let round of this.sessionData.rounds) {
-      if(round.type == 0 && !round.selectedFolder) {
+      if(round.type == 0 && !round.selectedFolder && !round.unsplashQuery) {
         return false;
       }
     }
@@ -267,6 +268,27 @@ export class SessionConfigComponent implements OnInit, AfterViewChecked {
     this.sessionsService.setSessionName(this.sessionData.id, newName)
     this.editingName = false
     window.getSelection().removeAllRanges()
+  }
+
+  onEditUnsplash(event) {
+    this.sessionsService.setRoundUnsplashEditing(this.sessionData.id, this.getSelectedRoundIndex(), true)
+    window.setTimeout(()=>{
+      let selection = window.getSelection()
+      let range = document.createRange()
+      range.selectNodeContents(event.target)
+      selection.removeAllRanges()
+      selection.addRange(range)
+    })
+    event.preventDefault()
+  }
+
+  onUnsplashEdited(event) {
+    let newQuery = event.target.innerText
+    this.sessionsService.setRoundUnsplashEditing(this.sessionData.id, this.getSelectedRoundIndex(), false)
+    this.sessionsService.setRoundUnsplashQuery(this.sessionData.id, this.getSelectedRoundIndex(), newQuery)
+    window.getSelection().removeAllRanges()
+    event.preventDefault()
+    event.target.innerText = newQuery
   }
 
   calculateRoundHours(round) {

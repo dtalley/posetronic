@@ -38,6 +38,7 @@
                     <decrement (click)="addTime(-1)" [ngClass]="{button: true, disabled: round.duration<=0}" *ngIf="editable">-</decrement>
                 </fragment>
                 <selectFolder *ngIf="round.type == 0" (click)="onChooseRoundFolder($event)" [ngClass]="{hilite: !round.selectedFolder, clear: !!round.selectedFolder}">{{round.selectedFolder?round.selectedFolder:'Choose Round Image Folder'}}</selectFolder>
+                <unsplash *ngIf="round.type == 0" (keydown.esc)="onUnsplashEdited($event)" (keydown.enter)="onUnsplashEdited($event)" (click)="onEditUnsplash($event)" (blur)="onUnsplashEdited($event)" [attr.contentEditable]="round.unsplashEditing?'':null" [ngClass]="{empty: !round.unsplashQuery, editing: round.unsplashEditing}">{{round.unsplashQuery}}</unsplash>
             </edit>
         </list-item>
     </rounds>

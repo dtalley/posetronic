@@ -126,6 +126,22 @@ info {
     color: #888888;
     font-size: 11px;
     word-wrap: break-word;
+    pointer-events: visiblePainted;
+}
+
+info a {
+    color: #FFCC00;
+    text-decoration: none;
+}
+
+info a:hover {
+    color: #FFEE00;
+    text-decoration: underline;
+}
+
+info a:active {
+    color: #FF8800;
+    text-decoration: underline;
 }
 
 controls {

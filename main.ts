@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as fs from 'fs'
@@ -82,6 +82,11 @@ function createWindow(): BrowserWindow {
       saveData()
     }
   })
+
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
 
   if (serve) {
     require('electron-reload')(__dirname, {

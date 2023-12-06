@@ -269,4 +269,21 @@ export class SessionsService {
       this.saveData()
     }
   }
+
+  setRoundUnsplashEditing(id, index, editing) {
+    let session = this.getSession(id)
+    if(session && index < session.rounds.length) {
+      session.rounds[index].unsplashEditing = editing;
+      this.saveData()
+    }
+  }
+
+  setRoundUnsplashQuery(id, index, query) {
+    console.log(query);
+    let session = this.getSession(id)
+    if(session && index < session.rounds.length) {
+      session.rounds[index].unsplashQuery = query;
+      this.saveData()
+    }
+  }
 }

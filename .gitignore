@@ -54,3 +54,6 @@ Thumbs.db
 releases/
 
 .angular/*
+
+lambda/*.zip
+lambda/node_modules/

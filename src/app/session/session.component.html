@@ -1,5 +1,5 @@
 <image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY, 'rest': currentRound&&currentRound.rest, 'technical': currentRound&&currentRound.type==2}">
-    <div #imageHolder id="imageHolder" *ngIf="currentFile && currentRound.type != 2" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(file://' + encodedFile + ')'}">
+    <div #imageHolder id="imageHolder" *ngIf="currentFile && currentRound.type != 2" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(' + encodedFile + ')'}">
 
     </div>
     <div #canvasHolder id="canvasHolder">
@@ -8,8 +8,14 @@
 </image>
 <rest [className]="imageClass" *ngIf="currentRound && currentRound.rest">"{{restQuote}}" <author>-{{restAuthor}}</author></rest>
 <interface [className]="mouseOver||betweenRounds||paused?'fadeIn':interfaceClass">
-    <info *ngIf="currentRound">
-        {{currentRound.rest?'Rest your brain for a bit.':currentFile}}
+    <info *ngIf="!currentFile">
+        Loading...
+    </info>
+    <info *ngIf="currentFile && !currentFile.author">
+        {{currentRound.rest?'Rest your brain for a bit.':getFileAttribution()}}
+    </info>
+    <info *ngIf="currentFile && currentFile.author">
+        via <a [href]="currentFile.link" target="_blank">Unsplash</a> by <a [href]="currentFile.author.link" target="_blank">{{currentFile.author.name}}</a>
     </info>
     <time *ngIf="currentRound">
         {{currentRound.minutes>0?currentRound.minutes+'m ':''}}

@@ -505,6 +505,53 @@ edit {
         box-sizing: border-box;
         margin: 2px 0px 0px 0px;
     }
+
+    unsplash {
+        width: 100%;
+        flex-basis: 100%;
+        box-sizing: border-box;
+        margin: 2px 0px 0px 0px;
+        line-height: 30px;
+        color: #000000;
+        padding: 10px 10px 10px 55px;
+        border: 1px solid #CCCCCC;
+        border-radius: 2px;
+        position: relative;
+    }
+
+    unsplash:hover:not(.editing) {
+        border-color: #AAAAAA;
+        background-color: #EEEEEE;
+        cursor: pointer;
+    }
+
+    unsplash:active:not(.editing) {
+        border-color: #777777;
+        cursor: pointer;
+    }
+
+    unsplash::before {
+        content: "";
+        width: 30px;
+        height: 30px;
+        --svg: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M10 9V0h12v9H10zm12 5h10v18H0V14h10v9h12v-9z" /></svg>');
+        -webkit-mask: var(--svg);
+        mask: var(--svg);
+        display: inline-block;
+        line-height: 30px;
+        background-color: #333333;
+        vertical-align: top;
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+    }
+
+    unsplash.empty:not(.editing)::after {
+        content: 'Unsplash photo search...';
+        color: #BBBBBB;
+        font-style: italic;
+    }
 }
 
 .button {

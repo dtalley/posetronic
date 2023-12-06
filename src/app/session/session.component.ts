@@ -8,6 +8,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as explorer from 'open-file-explorer';
 import {screen} from "electron";
+import { URLSearchParams } from 'url';
 
 let worker = null
 if (typeof Worker !== 'undefined') {
@@ -32,12 +33,13 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   trial = AppConfig.trial
 
   sessionFolder: string
+  unsplashQuery: string
   defaultSessionFolder: string
-  sessionFiles: Array<string> = []
+  sessionFiles: Array<any> = []
   roundImages: Array<string> = []
   activeSession: any
   sessionData: any = {}
-  currentFile: string
+  currentFile: any = {}
   encodedFile: string
   private sub: any
   private roundList: Array<any> = []
@@ -170,6 +172,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
             minutes: minutes,
             seconds: duration<10000?10:seconds,
             folder: round.selectedFolder,
+            query: round.unsplashQuery,
             type: round.type,
             exercise: round.exercise
           })
@@ -202,7 +205,10 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       if(stats.isDirectory()) {
         this.iterateDirectory(fullFile)
       } else if(this.supportedExtensions.includes(path.extname(fullFile))) {
-        this.sessionFiles.push(fullFile)
+        this.sessionFiles.push({
+          url: "file://" + fullFile.replace(/\\/g, "\\\\").replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29"),
+          name: fullFile
+        })
       }
     })
     this.shuffleFiles()
@@ -235,7 +241,7 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  showNextRound() {
+  async showNextRound() {
     this.currentIndex++
     
     if(this.intervalHandle) {
@@ -257,20 +263,54 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.onTogglePause()
     }
 
+    console.log(round)
+
     if(round.type != SessionRoundType.Technical) {
-      let oldSessionFolder = this.sessionFolder;
-      this.sessionFolder = round.folder
-      if(!this.sessionFolder) {
-        this.sessionFolder = this.defaultSessionFolder
-      }
-      if(!this.sessionFolder) {
-        console.log("No folder detected for sketching round, returning home...")
-        this.router.navigate(['/home'])
-        return;
-      }
-      if(oldSessionFolder != this.sessionFolder) {
-        this.iterateDirectory(this.sessionFolder)
-        this.imageIndex = -1
+      if(round.query) {
+        let oldUnsplashQuery = this.unsplashQuery
+        this.unsplashQuery = round.query
+        this.sessionFolder = ""
+        if(oldUnsplashQuery != this.unsplashQuery) {
+          const res = await fetch('https://or2ux34au1.execute-api.us-west-2.amazonaws.com/default/PosetronicUnsplashSearch?' + new URLSearchParams({
+            query: round.query,
+            per_page: "50",
+            total: "20"
+          }));
+          if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+            this.sessionFiles = []
+            for(let result of data) {
+              this.sessionFiles.push({
+                url: result.url,
+                name: result.url,
+                link: result.link,
+                author: result.author
+              })
+            }
+          } else {
+            console.log("Unsplash query failed, returning home...")
+            this.router.navigate(['/home'])
+            return;
+          }
+          this.shuffleFiles();
+        }
+      } else {
+        let oldSessionFolder = this.sessionFolder;
+        this.sessionFolder = round.folder
+        this.unsplashQuery = ""
+        if(!this.sessionFolder) {
+          this.sessionFolder = this.defaultSessionFolder
+        }
+        if(!this.sessionFolder) {
+          console.log("No folder detected for sketching round, returning home...")
+          this.router.navigate(['/home'])
+          return;
+        }
+        if(oldSessionFolder != this.sessionFolder) {
+          this.iterateDirectory(this.sessionFolder)
+          this.imageIndex = -1
+        }
       }
     } else {
       this.createDrawingCanvas()
@@ -294,7 +334,11 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
 
       console.log(this.currentFile)
 
-      this.encodedFile = this.currentFile.replace(/\\/g, "\\\\").replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29")
+      let protocol = "file://"
+      if(round.query) {
+        protocol = ""
+      }
+      this.encodedFile = this.currentFile.url
     } else {
       let quoteIndex = Math.round(Math.random()*(this.restQuotes.length-1))
       this.restQuote = this.restQuotes[quoteIndex].quote
@@ -307,6 +351,22 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
       this.interfaceClass = "fadeIn"
     }
     this.timerClass = "fadeIn"
+  }
+
+  getFileAttribution() {
+    if(!this.currentFile) {
+      return "Loading..."
+    } else if(this.currentRound.type == SessionRoundType.Rest) {
+      return "Rest your brain for a bit..."
+    } else if(this.currentRound.query) {
+      if(!this.currentFile.author) {
+        return "Loading..."
+      } else {
+        return "via <a href=\"" + this.currentFile.link + "\">Unsplash</a> by <a href=\"" + this.currentFile.author.link + "\">" + this.currentFile.author.name + "</a>"
+      }
+    } else {
+      return this.currentFile.url
+    }
   }
 
   onTimerFinished() {
@@ -428,28 +488,32 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
   }
 
   onOpenImage() {
-    explorer(path.dirname(this.currentFile), err => {
-      if(err) {
-        console.log(err)
-      }
-    })
+    if(!this.currentRound.query) {
+      explorer(path.dirname(this.currentFile.url.replace("file://", "")), err => {
+        if(err) {
+          console.log(err)
+        }
+      })
+    }
   }
 
   onDeleteImage() {
-    let unpause = false
-    if(!this.paused) {
-      this.onTogglePause()
-      unpause = true
-    }
-    let confirm = window.confirm("Are you sure you want to delete this file?")
-    if(confirm) {
-      fs.unlinkSync(this.currentFile)
-      this.sessionFiles.splice(this.imageIndex, 1)
-      this.imageIndex -= 1
-      this.currentIndex -= 1
-      this.showNextRound()
-    }  else if(unpause) {
-      this.onTogglePause()
+    if(!this.currentRound.query) {
+      let unpause = false
+      if(!this.paused) {
+        this.onTogglePause()
+        unpause = true
+      }
+      let confirm = window.confirm("Are you sure you want to delete this file?")
+      if(confirm) {
+        fs.unlinkSync(this.currentFile.url.replace("file://", ""))
+        this.sessionFiles.splice(this.imageIndex, 1)
+        this.imageIndex -= 1
+        this.currentIndex -= 1
+        this.showNextRound()
+      }  else if(unpause) {
+        this.onTogglePause()
+      }
     }
   }
 
