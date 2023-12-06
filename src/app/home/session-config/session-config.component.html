@@ -14,8 +14,8 @@
                     <sketch (click)="setRoundType(0)" [ngClass]="{button: true, selected: round.type==0}" *ngIf="round.type == 0 || editable">Sketch</sketch>
                     <spacer *ngIf="editable"></spacer>
                     <rest (click)="setRoundType(1)" [ngClass]="{button: true, selected: round.type==1}" *ngIf="round.type == 1 || editable">Rest</rest>
-                    <spacer *ngIf="editable"></spacer>
-                    <technical (click)="setRoundType(2)" [ngClass]="{button: true, selected: round.type==2}" *ngIf="round.type == 2 || editable">Technical</technical>
+                    <spacer *ngIf="editable && false"></spacer>
+                    <technical (click)="setRoundType(2)" [ngClass]="{button: true, selected: round.type==2}" *ngIf="(round.type == 2 || editable) && false">Technical</technical>
                 </fragment>
                 <fragment class="count" style="margin-left: 10px;">
                     <increment (click)="addCount(1)" class="button" *ngIf="editable">+</increment>

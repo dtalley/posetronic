@@ -27,6 +27,11 @@ image {
     box-sizing: border-box;
 }
 
+image #imageHolder {
+    cursor: pointer;
+    pointer-events: visiblePainted;
+}
+
 #canvasHolder {
     display: none;
     touch-action: none;

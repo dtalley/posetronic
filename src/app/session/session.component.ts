@@ -495,6 +495,8 @@ export class SessionComponent implements AfterViewInit, OnDestroy {
           console.log(err)
         }
       })
+    } else {
+      window.open(this.currentFile.link)
     }
   }
 

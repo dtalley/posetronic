@@ -1,5 +1,5 @@
 <image [ngClass]="{'grayscale': grayscale, 'mirror': mirror, 'mirrorY': mirrorY, 'rest': currentRound&&currentRound.rest, 'technical': currentRound&&currentRound.type==2}">
-    <div #imageHolder id="imageHolder" *ngIf="currentFile && currentRound.type != 2" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(' + encodedFile + ')'}">
+    <div #imageHolder id="imageHolder" (click)="onOpenImage()" *ngIf="currentFile && currentRound.type != 2" [className]="imageClass" [ngStyle]="{backgroundImage: 'url(' + encodedFile + ')'}">
 
     </div>
     <div #canvasHolder id="canvasHolder">
@@ -15,7 +15,7 @@
         {{currentRound.rest?'Rest your brain for a bit.':getFileAttribution()}}
     </info>
     <info *ngIf="currentFile && currentFile.author">
-        via <a [href]="currentFile.link" target="_blank">Unsplash</a> by <a [href]="currentFile.author.link" target="_blank">{{currentFile.author.name}}</a>
+        Photo by <a [href]="currentFile.author.link" target="_blank">{{currentFile.author.name}}</a> on <a [href]="currentFile.link" target="_blank">Unsplash</a>
     </info>
     <time *ngIf="currentRound">
         {{currentRound.minutes>0?currentRound.minutes+'m ':''}}
@@ -42,7 +42,7 @@
         <bottom>
         <group style="clear: both; margin: 5px 9px 0 0; text-align: center;" *ngIf="!trial && currentRound.type != 2">
             <control [ngClass]="{disabled: currentRound.rest}" title="Open File Location" class="open" (click)="onOpenImage()"></control>
-            <control [ngClass]="{disabled: currentRound.rest}" title="Delete This File" class="delete" (click)="onDeleteImage()"></control>
+            <control *ngIf="!currentRound.query" [ngClass]="{disabled: currentRound.rest}" title="Delete This File" class="delete" (click)="onDeleteImage()"></control>
             <spacer></spacer>
             <control title="Previous Image" (click)="onPreviousImage()" [className]="'prev-image' + ((imageIndex==0 || currentRound.rest)?' disabled':'')"></control>
             <label class="image"></label>

@@ -100,7 +100,6 @@ export class SessionsService {
       let parsedFiltered = parsed.sessions.filter((session) => session.editable)
       this.sessions.push(...parsedFiltered)
       this.lastFolder = parsed.folder
-      console.log(this.sessions)
     }
   }
 
@@ -115,7 +114,6 @@ export class SessionsService {
     }
     
     let rawData = JSON.stringify(data)
-    console.log(rawData)
     localStorage.setItem("sessions_config", rawData)
   }
 
